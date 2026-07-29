@@ -64,4 +64,4 @@ jobs:
           releaseName: "Beta Release v0.1.0-beta.${{ github.run_number }}"
           releaseBody: "Automated Beta build for testing."
           releaseDraft: false
-          prerelease: true
+          prerelease: false
