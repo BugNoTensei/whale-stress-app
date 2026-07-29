@@ -36,5 +36,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcyQkRGRUUwOEZBNzc4MjIKUldRaWVLZVA0UDY5Y3YzYWlrOWhtSFF6WmljY3RpaWdGV1NXU3lERWRSVlN6Y3gvSytDVnBsYlcK",
+      "endpoints": [
+        "https://github.com/BugNoTensei/whale-stress-app/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

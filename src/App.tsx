@@ -2,9 +2,15 @@ import { useState, useEffect } from "react";
 import { Menu, Settings, Music, Gamepad2, Heart } from "lucide-react";
 
 import whaleIcon from "./assets/icon/whaleicon.png";
+import { useUpdater } from "./hooks/useUpdater";
+import { UpdateModal } from "./components/updater/UpdateModal";
+import { SettingsDrawer } from "./components/updater/SettingsDrawer";
 
 export default function App() {
   const [isEvaluating, setIsEvaluating] = useState<boolean>(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+
+  const updater = useUpdater();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,11 +22,20 @@ export default function App() {
   return (
     <div className="w-full h-screen bg-[#f4f8ff] text-[#2c3e50] flex flex-col font-sans select-none overflow-hidden relative p-4">
       <header className="w-full flex justify-between items-center z-10 px-2 py-1">
-        <button className="text-slate-400 hover:text-slate-600 transition cursor-pointer">
+        <button
+          onClick={() => setIsSettingsOpen(true)}
+          className="text-slate-400 hover:text-slate-600 transition cursor-pointer"
+        >
           <Menu className="w-6 h-6 stroke-[1.5]" />
         </button>
-        <button className="text-slate-400 hover:text-slate-600 transition cursor-pointer">
+        <button
+          onClick={() => setIsSettingsOpen(true)}
+          className="text-slate-400 hover:text-slate-600 transition cursor-pointer relative"
+        >
           <Settings className="w-6 h-6 stroke-[1.5]" />
+          {updater.status === "available" && (
+            <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping" />
+          )}
         </button>
       </header>
 
@@ -188,6 +203,31 @@ export default function App() {
           <path d="M 10 12 C 20 5, 35 5, 45 12 C 35 19, 20 19, 10 12 Z M 10 12 L 0 5 L 0 19 Z" />
         </svg>
       </div>
+
+      {/* Auto Update Modal */}
+      <UpdateModal
+        status={updater.status}
+        currentVersion={updater.currentVersion}
+        updateInfo={updater.updateInfo}
+        progress={updater.progress}
+        downloadedBytes={updater.downloadedBytes}
+        totalBytes={updater.totalBytes}
+        errorMessage={updater.errorMessage}
+        onStartDownload={updater.startDownloadAndInstall}
+        onRelaunch={updater.applyUpdateAndRelaunch}
+        onDismiss={updater.dismissUpdate}
+        onRetry={() => updater.checkForUpdates(false)}
+      />
+
+      {/* Settings & Manual Check Drawer */}
+      <SettingsDrawer
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        currentVersion={updater.currentVersion}
+        status={updater.status}
+        onCheckUpdate={() => updater.checkForUpdates(false)}
+        onTriggerMock={updater.triggerMockUpdate}
+      />
     </div>
   );
 }
