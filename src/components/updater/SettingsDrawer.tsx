@@ -48,7 +48,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           </div>
 
           {/* App Info Card */}
-          <div className="my-6 bg-gradient-to-br from-sky-50 to-indigo-50/50 rounded-2xl p-4 border border-sky-100 flex flex-col items-center text-center">
+          <div className="my-6 bg-linear-to-br from-sky-50 to-indigo-50/50 rounded-2xl p-4 border border-sky-100 flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl mb-2">
               🐳
             </div>

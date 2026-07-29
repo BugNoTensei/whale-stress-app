@@ -51,7 +51,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
 
         {/* Header Icon & Title */}
         <div className="flex flex-col items-center text-center mt-1">
-          <div className="w-14 h-14 bg-gradient-to-br from-sky-400 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-400/30 mb-3 text-white">
+          <div className="w-14 h-14 bg-linear-to-br from-sky-400 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-400/30 mb-3 text-white">
             {status === "ready" ? (
               <CheckCircle2 className="w-8 h-8 animate-bounce" />
             ) : status === "error" ? (
@@ -102,7 +102,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
               {/* Progress bar */}
               <div className="w-full h-3 bg-sky-100 rounded-full overflow-hidden p-0.5">
                 <div
-                  className="h-full bg-gradient-to-r from-sky-400 to-indigo-500 rounded-full transition-all duration-300 shadow-sm"
+                  className="h-full bg-linear-to-r from-sky-400 to-indigo-500 rounded-full transition-all duration-300 shadow-sm"
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
@@ -134,7 +134,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
             <>
               <button
                 onClick={onStartDownload}
-                className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-sky-500/25 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-2 text-sm"
+                className="w-full py-3 px-4 bg-linear-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-sky-500/25 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-2 text-sm"
               >
                 <Download className="w-4 h-4" />
                 <span>อัปเดตทันที</span>
@@ -151,7 +151,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
           {status === "ready" && (
             <button
               onClick={onRelaunch}
-              className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-2 text-sm"
+              className="w-full py-3 px-4 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-2 text-sm"
             >
               <RefreshCw className="w-4 h-4 animate-spin-slow" />
               <span>รีสตาร์ทแอปทันที</span>
