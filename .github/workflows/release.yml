@@ -2,6 +2,8 @@ name: "Release App"
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*"
   workflow_dispatch:
@@ -36,6 +38,21 @@ jobs:
       - name: install frontend dependencies
         run: npm install
 
+      - name: set dynamic beta version in CI
+        run: |
+          node -e '
+            const fs = require("fs");
+            const ver = "0.1.0-beta.${{ github.run_number }}";
+            const pkg = JSON.parse(fs.readFileSync("package.json"));
+            pkg.version = ver;
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
+
+            const tauriConf = JSON.parse(fs.readFileSync("src-tauri/tauri.conf.json"));
+            tauriConf.version = ver;
+            fs.writeFileSync("src-tauri/tauri.conf.json", JSON.stringify(tauriConf, null, 2));
+            console.log("Updated CI build version to:", ver);
+          '
+
       - name: build tauri app
         uses: tauri-apps/tauri-action@v0
         env:
@@ -43,8 +60,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: v__VERSION__
-          releaseName: "App Release v__VERSION__"
-          releaseBody: "See the assets to download the app for your OS."
+          tagName: v0.1.0-beta.${{ github.run_number }}
+          releaseName: "Beta Release v0.1.0-beta.${{ github.run_number }}"
+          releaseBody: "Automated Beta build for testing."
           releaseDraft: false
           prerelease: false
