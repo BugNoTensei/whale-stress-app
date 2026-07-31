@@ -19,19 +19,33 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   onCheckUpdate,
   onTriggerMock,
 }) => {
-  if (!isOpen) return null;
-
   const handleManualCheck = async () => {
     onCheckUpdate();
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-slate-900/30 backdrop-blur-xs animate-fadeIn">
-      {/* Overlay click to close */}
-      <div className="flex-1" onClick={onClose} />
+    <div
+      className={`fixed inset-0 z-50 flex justify-end select-none transition-opacity duration-300 ease-out ${
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      {/* Backdrop Overlay */}
+      <div
+        onClick={onClose}
+        className={`absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity duration-300 ${
+          isOpen ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
-      {/* Drawer Container */}
-      <div className="w-full max-w-xs h-full bg-white/95 backdrop-blur-2xl shadow-2xl border-l border-sky-100 p-6 flex flex-col justify-between text-slate-700 animate-slideLeft">
+      {/* Drawer Container with Pure CSS 120 FPS GPU Compositing */}
+      <div
+        style={{
+          willChange: "transform",
+          transform: isOpen ? "translate3d(0, 0, 0)" : "translate3d(100%, 0, 0)",
+          transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+        className="relative w-full max-w-xs h-full bg-white shadow-2xl border-l border-sky-100 p-6 flex flex-col justify-between text-slate-700 z-10"
+      >
         {/* Header */}
         <div>
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -41,14 +55,14 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition cursor-pointer"
+              className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition cursor-pointer active:scale-90"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* App Info Card */}
-          <div className="my-6 bg-linear-to-br from-sky-50 to-indigo-50/50 rounded-2xl p-4 border border-sky-100 flex flex-col items-center text-center">
+          <div className="my-6 bg-linear-to-br from-sky-50 to-indigo-50/50 rounded-2xl p-4 border border-sky-100 flex flex-col items-center text-center shadow-xs">
             <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl mb-2">
               🐳
             </div>
@@ -72,7 +86,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             <button
               onClick={handleManualCheck}
               disabled={status === "checking"}
-              className="w-full p-3 bg-white hover:bg-sky-50/60 border border-slate-200/80 rounded-2xl shadow-xs flex items-center justify-between transition cursor-pointer active:scale-[0.98] group"
+              className="w-full p-3 bg-white hover:bg-sky-50/60 border border-slate-200/80 rounded-2xl shadow-xs flex items-center justify-between transition cursor-pointer active:scale-98"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white transition">
@@ -104,7 +118,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                   onTriggerMock();
                   onClose();
                 }}
-                className="w-full p-2.5 bg-indigo-50/80 hover:bg-indigo-100/80 border border-indigo-200/60 text-indigo-600 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.98]"
+                className="w-full p-2.5 bg-indigo-50/80 hover:bg-indigo-100/80 border border-indigo-200/60 text-indigo-600 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer active:scale-98"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>ทดสอบ UI ป๊อบอัปอัปเดต (Mock UI)</span>

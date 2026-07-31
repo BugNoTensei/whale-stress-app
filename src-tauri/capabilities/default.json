@@ -5,6 +5,10 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:default",
+    "core:window:allow-set-size",
+    "core:window:allow-center",
+    "core:window:allow-set-resizable",
     "opener:default",
     "updater:default",
     "process:allow-restart"

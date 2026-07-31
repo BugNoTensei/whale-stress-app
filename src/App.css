@@ -1,1 +1,58 @@
 @import "tailwindcss";
+
+/* Hardware Accelerated GPU Compositing & 60/120 FPS Optimization */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@layer utilities {
+  /* Lightweight GPU Glassmorphism */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 24px rgba(160, 190, 235, 0.18);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 12px 28px rgba(140, 175, 230, 0.25);
+  }
+
+  /* Soft Glowing Pulse */
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(91, 139, 241, 0.35);
+  }
+
+  .glow-deep-blue {
+    box-shadow: 0 0 18px rgba(79, 128, 225, 0.35);
+  }
+}
+
+/* Optimized GPU Floating animation */
+@keyframes floatWhale {
+  0%, 100% {
+    transform: translateY(0px) translateZ(0);
+  }
+  50% {
+    transform: translateY(-6px) translateZ(0);
+  }
+}
+
+.animate-float-whale {
+  animation: floatWhale 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+
+

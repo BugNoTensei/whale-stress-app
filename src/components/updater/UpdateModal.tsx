@@ -29,20 +29,32 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
   onDismiss,
   onRetry,
 }) => {
-  if (status === "idle" || status === "checking" || status === "up-to-date") {
-    return null;
-  }
-
+  const isVisible = !(status === "idle" || status === "checking" || status === "up-to-date");
   const formatMB = (bytes: number) => (bytes / (1024 * 1024)).toFixed(1);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-sm bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_20px_50px_rgba(91,139,241,0.25)] border border-sky-100 overflow-hidden flex flex-col p-6 text-slate-700 animate-scaleUp">
-        {/* Close button (only available before downloading) */}
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 select-none transition-opacity duration-300 ease-out ${
+        isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      {/* Backdrop Overlay */}
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity duration-300" />
+
+      {/* Modal Box Pure CSS 120 FPS GPU Composited */}
+      <div
+        style={{
+          willChange: "transform, opacity",
+          transform: isVisible ? "scale(1) translate3d(0, 0, 0)" : "scale(0.92) translate3d(0, 10px, 0)",
+          transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease-out",
+        }}
+        className="relative w-full max-w-sm bg-white shadow-2xl rounded-3xl border border-sky-100 overflow-hidden flex flex-col p-6 text-slate-700 z-10"
+      >
+        {/* Close button */}
         {status === "available" && (
           <button
             onClick={onDismiss}
-            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100/80 transition cursor-pointer"
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100/80 transition cursor-pointer active:scale-90"
             title="ปิด"
           >
             <X className="w-5 h-5" />
@@ -102,7 +114,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
               {/* Progress bar */}
               <div className="w-full h-3 bg-sky-100 rounded-full overflow-hidden p-0.5">
                 <div
-                  className="h-full bg-linear-to-r from-sky-400 to-indigo-500 rounded-full transition-all duration-300 shadow-sm"
+                  className="h-full bg-linear-to-r from-sky-400 to-indigo-500 rounded-full shadow-sm transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
@@ -134,14 +146,14 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
             <>
               <button
                 onClick={onStartDownload}
-                className="w-full py-3 px-4 bg-linear-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-sky-500/25 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-2 text-sm"
+                className="w-full py-3 px-4 bg-linear-to-r from-sky-500 to-indigo-500 hover:from-sky-600 hover:to-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-sky-500/25 active:scale-98 transition cursor-pointer flex items-center justify-center gap-2 text-sm"
               >
                 <Download className="w-4 h-4" />
                 <span>อัปเดตทันที</span>
               </button>
               <button
                 onClick={onDismiss}
-                className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-500 font-semibold rounded-2xl active:scale-[0.98] transition cursor-pointer text-xs"
+                className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-500 font-semibold rounded-2xl active:scale-98 transition cursor-pointer text-xs"
               >
                 ไว้ทีหลัง
               </button>
@@ -151,7 +163,7 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
           {status === "ready" && (
             <button
               onClick={onRelaunch}
-              className="w-full py-3 px-4 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-2 text-sm"
+              className="w-full py-3 px-4 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/25 active:scale-98 transition cursor-pointer flex items-center justify-center gap-2 text-sm"
             >
               <RefreshCw className="w-4 h-4 animate-spin-slow" />
               <span>รีสตาร์ทแอปทันที</span>
@@ -162,13 +174,13 @@ export const UpdateModal: React.FC<UpdateModalProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={onRetry}
-                className="flex-1 py-2.5 px-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-md transition cursor-pointer text-xs"
+                className="flex-1 py-2.5 px-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-md transition cursor-pointer text-xs active:scale-98"
               >
                 ลองใหม่อีกครั้ง
               </button>
               <button
                 onClick={onDismiss}
-                className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-2xl transition cursor-pointer text-xs"
+                className="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold rounded-2xl transition cursor-pointer text-xs active:scale-98"
               >
                 ปิด
               </button>
