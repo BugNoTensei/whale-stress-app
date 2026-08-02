@@ -9,6 +9,8 @@ import { SettingsDrawer } from "./components/updater/SettingsDrawer";
 import { StressResultScreen } from "./components/stress/StressResultScreen";
 import { StressLevelType } from "./components/stress/VerticalStressMeter";
 import { GameSelectionScreen } from "./components/games/GameSelectionScreen";
+import { BubblePopGameScreen } from "./components/games/BubblePopGameScreen";
+import WhaleOceanGameScreen from "./components/games/WhaleOceanGameScreen";
 
 // Helper function for display Hz-synced smooth native window morphing animation (60Hz, 120Hz, 144Hz ProMotion)
 const animateWindowSize = async (
@@ -73,7 +75,7 @@ export default function App() {
   const [isEvaluating, setIsEvaluating] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<
-    "home" | "stress_result" | "games"
+    "home" | "stress_result" | "games" | "bubble_pop_game" | "whale_ocean_game"
   >("home");
   const [measuredLevel, setMeasuredLevel] = useState<StressLevelType>("medium");
   const [measuredPercentage, setMeasuredPercentage] = useState<number>(50);
@@ -88,14 +90,16 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  const isLandscape = currentView === "games" || currentView === "bubble_pop_game" || currentView === "whale_ocean_game";
+
   // Smooth window morphing effect when entering/exiting landscape games screen
   useEffect(() => {
-    if (currentView === "games") {
+    if (isLandscape) {
       animateWindowSize(980, 640, 380);
     } else {
       animateWindowSize(400, 720, 380);
     }
-  }, [currentView]);
+  }, [isLandscape]);
 
   const handleOpenStressResult = () => {
     const levels: StressLevelType[] = [
@@ -117,8 +121,6 @@ export default function App() {
     setMeasuredPercentage(pctMap[randomLevel]);
     setCurrentView("stress_result");
   };
-
-  const isLandscape = currentView === "games";
 
   return (
     <div className="w-screen h-screen bg-[#e8f1fc] flex items-center justify-center p-2 overflow-hidden select-none relative">
@@ -172,6 +174,32 @@ export default function App() {
             }}
             onCancel={() => setCurrentView("home")}
           />
+        ) : currentView === "whale_ocean_game" ? (
+          <motion.div
+            key="whale_ocean_game_view"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
+          >
+            <WhaleOceanGameScreen
+              onBackToHome={() => setCurrentView("games")}
+            />
+          </motion.div>
+        ) : currentView === "bubble_pop_game" ? (
+          <motion.div
+            key="bubble_pop_game_view"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
+          >
+            <BubblePopGameScreen
+              onBackToHome={() => setCurrentView("games")}
+            />
+          </motion.div>
         ) : currentView === "games" ? (
           <motion.div
             key="games_view"
@@ -192,10 +220,14 @@ export default function App() {
                 }
               }}
               onSelectGame={(gameId) => {
-                setToastMessage(
-                  `เริ่มเกม ${gameId === "bubble_pop" ? "Bubble Pop Relax" : "Whale Ocean"}! 🎮`,
-                );
-                setTimeout(() => setToastMessage(null), 3000);
+                if (gameId === "bubble_pop") {
+                  setCurrentView("bubble_pop_game");
+                } else if (gameId === "whale_ocean") {
+                  setCurrentView("whale_ocean_game");
+                } else {
+                  setToastMessage(`เกมนี้กำลังอยู่ระหว่างการพัฒนา 🐳`);
+                  setTimeout(() => setToastMessage(null), 3000);
+                }
               }}
             />
           </motion.div>

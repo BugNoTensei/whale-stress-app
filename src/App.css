@@ -54,5 +54,405 @@
   will-change: transform;
 }
 
+/* ==============================
+   WHALE OCEAN GAME SCREEN
+   ============================== */
+.whale-ocean-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Inter", "Noto Sans Thai", sans-serif;
+  cursor: crosshair;
+}
+
+.whale-ocean-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.whale-ocean-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px 14px;
+  gap: 12px;
+}
+
+.whale-ocean-hud > * {
+  pointer-events: auto;
+}
+
+/* === TOP LEFT === */
+.wo-top-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 130px;
+}
+
+.wo-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: background 0.2s ease;
+}
+.wo-back-btn:hover {
+  background: rgba(255, 255, 255, 0.30);
+}
+
+.wo-stat-card {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  border-radius: 14px;
+  padding: 8px 12px;
+  color: white;
+  text-align: center;
+}
+
+.wo-stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+}
+
+.wo-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 2px 0 1px;
+}
+
+.wo-stat-sub {
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.wo-calm-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 99px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.wo-calm-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7dd3fc, #38bdf8);
+  border-radius: 99px;
+  transition: width 1s ease;
+}
+
+/* === TOP CENTER === */
+.wo-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+  padding: 8px 18px;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.wo-title-icon {
+  font-size: 22px;
+}
+
+.wo-title-text {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.wo-title-sub {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* === TOP RIGHT === */
+.wo-top-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.wo-control-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.wo-ctrl-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.wo-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.wo-bgm-wrapper {
+  position: relative;
+}
+
+.wo-bgm-picker {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  background: rgba(10, 40, 80, 0.80);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 14px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 50;
+  min-width: 160px;
+}
+
+.wo-bgm-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.85);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.wo-bgm-option:hover {
+  background: rgba(255,255,255,0.12);
+}
+.wo-bgm-option.active {
+  background: rgba(56,189,248,0.25);
+  color: #7dd3fc;
+  font-weight: 600;
+}
+
+/* === PAUSE OVERLAY === */
+.wo-pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 30, 70, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.wo-pause-card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.30);
+  border-radius: 24px;
+  padding: 36px 48px;
+  text-align: center;
+  color: white;
+}
+
+.wo-pause-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.wo-pause-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.wo-pause-sub {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 20px;
+}
+
+.wo-resume-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.wo-resume-btn:hover { opacity: 0.9; }
+
+/* === BOTTOM BAR === */
+.wo-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+.wo-hint, .wo-peace-msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 40, 90, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: 18px;
+  padding: 10px 20px;
+  color: rgba(255,255,255,0.90);
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 560px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.wo-hint-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.wo-peace-msg {
+  background: rgba(56,189,248,0.20);
+  border-color: rgba(125,211,252,0.35);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* === BREATHING GUIDE (Feature 8) === */
+.wo-breathing-container {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  z-index: 30;
+}
+
+.wo-breathing-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56,189,248,0.30) 0%, rgba(125,211,252,0.12) 60%, transparent 100%);
+  border: 2px solid rgba(125,211,252,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 0 24px rgba(56,189,248,0.25);
+}
+
+.wo-breathing-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.90);
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  letter-spacing: 0.01em;
+}
+
+.wo-breathing-dismiss {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.65);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.wo-breathing-dismiss:hover { opacity: 0.8; }
+
+/* === FOCUS MODE === */
+.wo-focus-back {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.20);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 60;
+  pointer-events: auto;
+  transition: all 0.2s;
+}
+
+.wo-focus-hint {
+  font-size: 10px;
+  color: rgba(255,255,255,0.50);
+  margin-top: 6px;
+  text-align: right;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
 
 
