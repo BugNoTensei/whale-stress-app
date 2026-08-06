@@ -78,10 +78,22 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
                 </p>
               </div>
 
-              {/* Footer / Copyright */}
-              <div className="text-center pt-2 text-[10px] text-white/40 border-t border-white/10">
-                <div>Version 1.0.0 (Production Release)</div>
-                <div>© 2026 Whale Stress Relief Innovation Team. All rights reserved.</div>
+              {/* Clean Modern Card Footer */}
+              <div className="bg-black/30 p-4 rounded-2xl border border-white/12 space-y-2 mt-2">
+                <div className="flex justify-between items-center text-[11px] font-bold text-sky-300">
+                  <span>Relaxation Music Therapy System</span>
+                  <span className="bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full text-[9px] border border-sky-400/30">Prototype Release</span>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {["React 19", "TypeScript", "Canvas 2D", "Web Audio API", "Framer Motion", "Tauri"].map(tech => (
+                    <span key={tech} className="bg-white/10 text-white/80 px-2 py-0.5 rounded-md text-[9px] font-medium border border-white/10">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                <div className="text-center pt-2 text-[9.5px] text-white/40 border-t border-white/10">
+                  © 2026 Whale Stress Relief Innovation Team. All rights reserved.
+                </div>
               </div>
             </div>
           </motion.div>

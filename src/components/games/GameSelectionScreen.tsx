@@ -3,11 +3,6 @@ import { motion } from "motion/react";
 import {
   ChevronLeft,
   Play,
-  Home,
-  Music,
-  Gamepad2,
-  Wind,
-  BarChart2,
   Smile,
   Heart,
   Volume2,
@@ -21,15 +16,11 @@ import whaleIcon from "../../assets/icon/whaleicon.png";
 interface GameSelectionScreenProps {
   onBackToHome: () => void;
   onSelectGame?: (gameId: string) => void;
-  activeTab?: string;
-  onTabChange?: (tab: string) => void;
 }
 
 export const GameSelectionScreen: React.FC<GameSelectionScreenProps> = ({
   onBackToHome,
   onSelectGame,
-  activeTab = "games",
-  onTabChange,
 }) => {
   // Auto switch landscape mode on mount if Tauri API is present
   useEffect(() => {
@@ -244,70 +235,6 @@ export const GameSelectionScreen: React.FC<GameSelectionScreenProps> = ({
           </div>
         </motion.div>
       </main>
-
-      {/* Bottom Navigation Bar (100% Matching Image Spec) */}
-      <nav className="w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-sky-100/90 px-6 py-3 flex items-center justify-around z-30 my-1">
-        {/* Item 1: Home */}
-        <button
-          onClick={onBackToHome}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition cursor-pointer ${
-            activeTab === "home"
-              ? "text-[#254394] font-extrabold bg-sky-50"
-              : "text-slate-500 hover:text-slate-800 font-semibold"
-          }`}
-        >
-          <Home className="w-4 h-4" />
-          <span className="text-xs">หน้าหลัก</span>
-        </button>
-
-        {/* Item 2: Music */}
-        <button
-          onClick={() => onTabChange?.("music")}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition cursor-pointer ${
-            activeTab === "music"
-              ? "text-[#254394] font-extrabold bg-sky-50"
-              : "text-slate-500 hover:text-slate-800 font-semibold"
-          }`}
-        >
-          <Music className="w-4 h-4" />
-          <span className="text-xs">ฟังเพลง</span>
-        </button>
-
-        {/* Item 3: Games (Active) */}
-        <button
-          onClick={() => onTabChange?.("games")}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[#254394] font-extrabold bg-sky-50 border border-sky-200/60 shadow-xs cursor-pointer"
-        >
-          <Gamepad2 className="w-4.5 h-4.5 text-[#254394]" />
-          <span className="text-xs">เกมคลายเครียด</span>
-        </button>
-
-        {/* Item 4: Breathing */}
-        <button
-          onClick={() => onTabChange?.("breathing")}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition cursor-pointer ${
-            activeTab === "breathing"
-              ? "text-[#254394] font-extrabold bg-sky-50"
-              : "text-slate-500 hover:text-slate-800 font-semibold"
-          }`}
-        >
-          <Wind className="w-4 h-4" />
-          <span className="text-xs">ฝึกหายใจ</span>
-        </button>
-
-        {/* Item 5: Analytics */}
-        <button
-          onClick={() => onTabChange?.("analytics")}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition cursor-pointer ${
-            activeTab === "analytics"
-              ? "text-[#254394] font-extrabold bg-sky-50"
-              : "text-slate-500 hover:text-slate-800 font-semibold"
-          }`}
-        >
-          <BarChart2 className="w-4 h-4" />
-          <span className="text-xs">สถิติความเครียด</span>
-        </button>
-      </nav>
     </motion.div>
   </div>
   );

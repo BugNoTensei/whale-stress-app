@@ -447,10 +447,14 @@ export default function RelaxationMusicScreen({ onBackToHome }: RelaxationMusicS
   const prevCategoryRef = useRef<MusicCategory>(currentTrack.category);
   const lastInteractionRef = useRef(Date.now());
 
-  // Save last track
+  // Window Title Sync & Session Welcome Banner
   useEffect(() => {
-    localStorage.setItem("last_track_id", currentTrack.id);
+    document.title = `Now Playing • ${currentTrack.title} | Relaxation Music Therapy`;
   }, [currentTrack]);
+
+  useEffect(() => {
+    addToast("🌿 ยินดีต้อนรับกลับมา ขอให้เป็นช่วงเวลาที่ผ่อนคลายนะครับ", "🌊");
+  }, [addToast]);
 
   // ── Filtered tracks ──
   const filteredTracks = categoryFilter === "all"

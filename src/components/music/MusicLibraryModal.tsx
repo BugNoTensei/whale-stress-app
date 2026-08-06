@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { MusicTrack, TRACKS, MusicCategory } from "./RelaxationMusicScreen";
 import { preferenceManager } from "../../utils/preferenceManager";
+import { EmptyState } from "../ui/EmptyState";
 
 interface MusicLibraryModalProps {
   isOpen: boolean;
@@ -187,35 +188,47 @@ export const MusicLibraryModal: React.FC<MusicLibraryModalProps> = ({
 
                 {/* Track Cards Grid */}
                 <div className="flex-1 overflow-y-auto grid grid-cols-2 gap-2.5 pr-1" style={{ scrollbarWidth: "none" }}>
-                  {filtered.map(track => {
-                    const isSelected = track.id === currentTrackId;
-                    const isFav = prefs.favorites.includes(track.id);
+                  {filtered.length === 0 ? (
+                    <div className="col-span-2 py-6">
+                      <EmptyState
+                        icon="🔍"
+                        title="ไม่พบเพลงที่ค้นหา"
+                        description="ลองค้นหาด้วยคำหรือเลือกหมวดหมู่อื่นดูนะครับ"
+                        actionLabel="ล้างคำค้นหา"
+                        onAction={() => { setSearchTerm(""); setSelectedCategory("all"); }}
+                      />
+                    </div>
+                  ) : (
+                    filtered.map(track => {
+                      const isSelected = track.id === currentTrackId;
+                      const isFav = prefs.favorites.includes(track.id);
 
-                    return (
-                      <motion.div
-                        key={track.id}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          onSelectTrack(track);
-                          onClose();
-                        }}
-                        className={`p-3 rounded-2xl border flex items-center gap-3 cursor-pointer transition ${isSelected ? "bg-sky-500/25 border-sky-400" : "bg-white/5 border-white/10 hover:bg-white/15"}`}
-                      >
-                        <div
-                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold"
-                          style={{ backgroundColor: track.color + "55" }}
+                      return (
+                        <motion.div
+                          key={track.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            onSelectTrack(track);
+                            onClose();
+                          }}
+                          className={`p-3 rounded-2xl border flex items-center gap-3 cursor-pointer transition ${isSelected ? "bg-sky-500/25 border-sky-400" : "bg-white/5 border-white/10 hover:bg-white/15"}`}
                         >
-                          <Play size={16} fill="currentColor" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs font-bold truncate text-white">{track.title}</div>
-                          <div className="text-[10px] text-white/60 truncate">{track.subtitle}</div>
-                        </div>
-                        {isFav && <Heart size={14} className="fill-pink-400 text-pink-400 shrink-0" />}
-                      </motion.div>
-                    );
-                  })}
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold"
+                            style={{ backgroundColor: track.color + "55" }}
+                          >
+                            <Play size={16} fill="currentColor" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-bold truncate text-white">{track.title}</div>
+                            <div className="text-[10px] text-white/60 truncate">{track.subtitle}</div>
+                          </div>
+                          {isFav && <Heart size={14} className="fill-pink-400 text-pink-400 shrink-0" />}
+                        </motion.div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             )}

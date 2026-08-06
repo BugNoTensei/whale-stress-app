@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Heart, Activity, Menu, Settings } from "lucide-react";
-
-import whaleIcon from "./assets/icon/whaleicon.png";
+import { Menu, Settings } from "lucide-react";
 import { useUpdater } from "./hooks/useUpdater";
 import { UpdateModal } from "./components/updater/UpdateModal";
 import { SettingsDrawer } from "./components/updater/SettingsDrawer";
@@ -72,6 +70,9 @@ const animateWindowSize = async (
   }
 };
 
+import { SplashScreen } from "./components/ui/SplashScreen";
+import { HomeScreen } from "./components/home/HomeScreen";
+
 export default function App() {
   const [isEvaluating, setIsEvaluating] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -91,18 +92,16 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const isLandscape = currentView === "games" || currentView === "bubble_pop_game" || currentView === "whale_ocean_game" || currentView === "music";
+  const isLandscape = true;
 
-  // Smooth window morphing effect when entering/exiting landscape screens
+  // Smooth window morphing effect for landscape screens
   useEffect(() => {
     if (currentView === "music") {
       animateWindowSize(1100, 680, 380);
-    } else if (isLandscape) {
-      animateWindowSize(980, 640, 380);
     } else {
-      animateWindowSize(400, 720, 380);
+      animateWindowSize(1000, 640, 380);
     }
-  }, [isLandscape, currentView]);
+  }, [currentView]);
 
   const handleOpenStressResult = () => {
     const levels: StressLevelType[] = [
@@ -127,12 +126,16 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen bg-[#e8f1fc] flex items-center justify-center p-2 overflow-hidden select-none relative">
+      {/* Animated Launch Splash Screen */}
+      <AnimatePresence>
+        {isEvaluating && <SplashScreen onComplete={() => setIsEvaluating(false)} />}
+      </AnimatePresence>
       {/* Morphing App Frame with Synchronized Liquid Cubic Motion */}
       <motion.div
         animate={{
-          width: isLandscape ? (currentView === "music" ? 1100 : 980) : 400,
-          height: isLandscape ? (currentView === "music" ? 680 : 640) : 720,
-          borderRadius: isLandscape ? 28 : 36,
+          width: currentView === "music" ? 1100 : 1000,
+          height: currentView === "music" ? 680 : 640,
+          borderRadius: 28,
         }}
         transition={{ duration: 0.38, ease: [0.215, 0.61, 0.355, 1] }}
         className="bg-[#f4f8ff] text-[#2c3e50] flex flex-col font-sans select-none overflow-hidden relative shadow-[0_20px_60px_rgba(91,139,241,0.22)] border border-white/90 p-3.5 max-w-full max-h-full"
@@ -162,32 +165,40 @@ export default function App() {
           </header>
         )}
 
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="wait">
           {currentView === "music" ? (
             <motion.div
               key="music_view"
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               className="w-full h-full z-10 gpu-accelerated"
             >
               <RelaxationMusicScreen onBackToHome={() => setCurrentView("home")} />
             </motion.div>
           ) : currentView === "stress_result" ? (
-            <StressResultScreen
-              key="stress_result"
-              measuredLevel={measuredLevel}
-              stressPercentage={measuredPercentage}
-              onSave={(level) => {
-                setToastMessage(
-                  `บันทึกระดับความเครียด (${level}) เรียบร้อยแล้ว 💙`,
-                );
-                setCurrentView("home");
-                setTimeout(() => setToastMessage(null), 3000);
-              }}
-              onCancel={() => setCurrentView("home")}
-            />
+            <motion.div
+              key="stress_result_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full z-10 gpu-accelerated"
+            >
+              <StressResultScreen
+                measuredLevel={measuredLevel}
+                stressPercentage={measuredPercentage}
+                onSave={(level) => {
+                  setToastMessage(
+                    `บันทึกระดับความเครียด (${level}) เรียบร้อยแล้ว 💙`,
+                  );
+                  setCurrentView("home");
+                  setTimeout(() => setToastMessage(null), 3000);
+                }}
+                onCancel={() => setCurrentView("home")}
+              />
+            </motion.div>
           ) : currentView === "whale_ocean_game" ? (
             <motion.div
               key="whale_ocean_game_view"
@@ -225,14 +236,6 @@ export default function App() {
             >
               <GameSelectionScreen
                 onBackToHome={() => setCurrentView("home")}
-                onTabChange={(tab) => {
-                  if (tab === "home") setCurrentView("home");
-                  else if (tab === "games") setCurrentView("games");
-                  else {
-                    setToastMessage(`ระบบ "${tab}" กำลังอยู่ระหว่างการพัฒนา 🐳`);
-                    setTimeout(() => setToastMessage(null), 3000);
-                  }
-                }}
                 onSelectGame={(gameId) => {
                   if (gameId === "bubble_pop") {
                     setCurrentView("bubble_pop_game");
@@ -246,160 +249,26 @@ export default function App() {
               />
             </motion.div>
           ) : (
-          <motion.main
-            key="home"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.42, ease: [0.32, 0.72, 0, 1] }}
-            className="flex-1 flex flex-col items-center justify-between z-10 max-w-sm mx-auto w-full pt-1 pb-4 gpu-accelerated"
-          >
-            <div className="flex flex-col items-center text-center">
-              <div className="w-48 h-28 flex items-center justify-center my-1">
-                <motion.img
-                  src={whaleIcon}
-                  alt="Whale"
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="max-w-full max-h-full object-contain drop-shadow-sm"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    if (e.currentTarget.parentElement) {
-                      e.currentTarget.parentElement.innerText =
-                        "🐳 (วางรูปฉลามวาฬที่นี่)";
-                      e.currentTarget.parentElement.className =
-                        "w-48 h-24 border-2 border-dashed border-sky-300 rounded-2xl flex items-center justify-center text-xs text-sky-500 font-medium my-1";
-                    }
-                  }}
-                />
-              </div>
-
-              <h1 className="text-2xl font-bold text-[#2a3a5e] flex items-center gap-1.5 mt-1">
-                ยินดีต้อนรับ <span className="text-[#81b2f8]">💙</span>
-              </h1>
-
-              <p className="text-[11px] text-slate-400 max-w-65 leading-relaxed mt-1 font-medium">
-                ให้เราอยู่เป็นเพื่อนคุณในทุกช่วงเวลาที่เหนื่อยล้า
-                <br />
-                เลือกสิ่งที่คุณต้องการ เพื่อผ่อนคลายความเครียด
-              </p>
-            </div>
-
-            {/* Clickable Stress Evaluation Card */}
             <motion.div
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleOpenStressResult}
-              className="w-full bg-white/85 hover:bg-white/95 transition backdrop-blur-md rounded-4xl pt-6 pb-12 px-6 shadow-[0_10px_30px_rgba(160,190,235,0.22)] border border-white text-center my-auto relative overflow-hidden flex flex-col items-center justify-between min-h-64 cursor-pointer group"
-              title="คลิกเพื่อดูหน้าประเมินระดับความเครียด"
+              key="home_landscape_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full z-10 gpu-accelerated"
             >
-              <h2 className="text-xl font-bold text-[#1f2d4d] tracking-wide group-hover:text-sky-600 transition">
-                ระดับความเครียดของคุณ 📊
-              </h2>
-
-              <div className="relative w-full my-auto py-3 flex items-center justify-center">
-                <svg
-                  className="absolute w-full h-16 text-[#d2e4fc] z-0 animate-wave-fluid"
-                  viewBox="0 0 320 60"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M 0 30 L 70 30 L 80 30 L 92 8 L 104 50 L 114 18 L 126 38 L 135 30 L 185 30 L 194 8 L 206 50 L 216 18 L 228 38 L 238 30 L 320 30" />
-                </svg>
-
-                <div className="w-20 h-20 bg-[#5b8bf1] group-hover:bg-[#4777dd] rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(91,139,241,0.35)] z-10 relative transition">
-                  <Activity className="w-10 h-10 text-white animate-pulse" />
-
-                  <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#ff6879] rounded-full flex items-center justify-center shadow-md border-2 border-white">
-                    <Heart className="w-3.5 h-3.5 text-white fill-white" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="z-10 mb-1 flex flex-col items-center">
-                {isEvaluating ? (
-                  <p className="text-2xl font-bold text-[#1f2d4d] tracking-wider">
-                    กำลังประเมิน...
-                  </p>
-                ) : (
-                  <p className="text-xl font-bold text-[#1f2d4d] tracking-tight">
-                    สภาวะอารมณ์ปกติ ผ่อนคลาย
-                  </p>
-                )}
-              </div>
-
-              <div className="absolute bottom-0 left-0 w-full h-12 pointer-events-none overflow-hidden rounded-b-4xl">
-                <svg
-                  className="absolute bottom-0 w-[120%] left-[-10%] h-12 text-[#bde0fe]/40"
-                  viewBox="0 0 500 150"
-                  preserveAspectRatio="none"
-                >
-                  <path
-                    d="M0,80 C150,150 350,20 500,80 L500,150 L0,150 Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-                <svg
-                  className="absolute bottom-0 w-[120%] left-[-5%] h-10 text-[#c8b6ff]/35"
-                  viewBox="0 0 500 150"
-                  preserveAspectRatio="none"
-                >
-                  <path
-                    d="M0,100 C200,30 300,140 500,90 L500,150 L0,150 Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-              </div>
+              <HomeScreen
+                onNavigate={(view) => {
+                  if (view === "stress_result") {
+                    handleOpenStressResult();
+                  } else {
+                    setCurrentView(view);
+                  }
+                }}
+                onOpenSettings={() => setIsSettingsOpen(true)}
+                isEvaluating={isEvaluating}
+              />
             </motion.div>
-
-            {/* Action Buttons: Music & Games matching Image 2 */}
-            <div className="grid grid-cols-2 gap-3.5 w-full z-10">
-              {/* Music Button */}
-              <motion.button
-                whileHover={{ scale: 1.03, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setCurrentView("music")}
-                className="flex items-center justify-start gap-3 bg-white/95 hover:bg-white p-3.5 rounded-3xl shadow-[0_6px_20px_rgba(180,205,240,0.35)] transition border border-white cursor-pointer select-none"
-              >
-                <div className="w-12 h-12 bg-[#dce8f8] rounded-full flex items-center justify-center shrink-0">
-                  <svg
-                    className="w-5 h-5 text-[#3b66c4]"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M9 3v10.55A3.992 3.992 0 0 0 7 13c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h10v6.55A3.992 3.992 0 0 0 19 13c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V3H9z" />
-                  </svg>
-                </div>
-                <span className="font-bold text-[#1f2d4d] text-base">
-                  ฟังเพลง
-                </span>
-              </motion.button>
-
-              {/* Game Button */}
-              <motion.button
-                whileHover={{ scale: 1.03, y: -1 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setCurrentView("games")}
-                className="flex items-center justify-start gap-3 bg-[#eef4ff] hover:bg-white p-3.5 rounded-3xl shadow-[0_6px_20px_rgba(180,205,240,0.35)] transition border border-[#d2e4fc] cursor-pointer select-none group"
-              >
-                <div className="w-12 h-12 bg-[#e3dbfa] rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                  <svg
-                    className="w-6 h-6 text-[#584fa8]"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M17 6H7C4.24 6 2 8.24 2 11v4c0 1.66 1.34 3 3 3 1.25 0 2.33-.76 2.79-1.85L9 14h6l1.21 2.15C16.67 17.24 17.75 18 19 18c1.66 0 3-1.34 3-3v-4c0-2.76-2.24-5-5-5zm-9.5 6.5h-1v1h-1v-1h-1v-1h1v-1h1v1h1v1zm8.5 1.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm1.5-2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
-                  </svg>
-                </div>
-                <span className="font-bold text-[#1f2d4d] text-base group-hover:text-[#254394]">
-                  เล่นเกม
-                </span>
-              </motion.button>
-            </div>
-          </motion.main>
           )}
         </AnimatePresence>
 
