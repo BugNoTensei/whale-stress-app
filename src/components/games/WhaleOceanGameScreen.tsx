@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, Volume2, VolumeX, Pause, Play, Music } from "lucide-react";
+import { ChevronLeft, Volume2, VolumeX, Pause, Play, Music, BarChart2 } from "lucide-react";
 import whaleIcon from "../../assets/icon/whaleicon.png";
 import oceanBg from "../../assets/whale_ocean_bg.png";
 import { BGMTrack, Particle, RippleEffect } from "../../types/game";
 import { BGM_OPTIONS, PEACE_MESSAGES } from "../../constants/game";
 import { soundManager as sounds } from "../../utils/audioSynth";
+import { StressFloatingWidget } from "../ui/StressFloatingWidget";
+import { StressGraph } from "../stress/StressGraph";
 
 export type { BGMTrack };
 
@@ -93,6 +95,7 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
   const [calmScore, setCalmScore] = useState(0);
   const [showBreathing, setShowBreathing] = useState(false);
   const [breathingEnabled] = useState(true);
+  const [showGraphModal, setShowGraphModal] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [uiVisible, setUiVisible] = useState(true);
 
@@ -1059,6 +1062,9 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
                 )}
               </AnimatePresence>
             </div>
+            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.93 }} className="wo-ctrl-btn" onClick={() => setShowGraphModal(v => !v)} title="ดูดีไซน์กราฟวัดความเครียด" id="wo-graph-btn">
+              <BarChart2 size={18} />
+            </motion.button>
             <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.93 }} className="wo-ctrl-btn" onClick={() => setIsMuted(v => !v)} id="wo-mute-btn">
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </motion.button>
@@ -1104,12 +1110,42 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
         )}
       </AnimatePresence>
 
+      {/* STRESS GRAPH MODAL */}
+      <AnimatePresence>
+        {showGraphModal && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-xs pointer-events-auto"
+            onClick={() => setShowGraphModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 15 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-xl h-96 relative"
+            >
+              <button
+                onClick={() => setShowGraphModal(false)}
+                className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center border border-white/20 z-50 hover:bg-slate-700 shadow-lg cursor-pointer text-xs"
+              >
+                ✕
+              </button>
+              <StressGraph transparent={true} currentPercentage={38} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* BREATHING GUIDE (Feature 8) */}
       <AnimatePresence>
         {showBreathing && breathingEnabled && !isPaused && (
           <BreathingGuide onDismiss={() => setShowBreathing(false)} />
         )}
       </AnimatePresence>
+
+      {/* FLOATING STRESS LEVEL WIDGET */}
+      {!isPaused && (
+        <StressFloatingWidget statusText="กำลังลดลง" className="absolute bottom-16 left-6 z-30 opacity-90 hover:opacity-100 transition pointer-events-auto" />
+      )}
 
       {/* BOTTOM BAR */}
       <div className="wo-bottom-bar">

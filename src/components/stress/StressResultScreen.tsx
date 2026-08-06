@@ -3,8 +3,8 @@ import { motion } from "motion/react";
 import confetti from "canvas-confetti";
 import { Check, X, Sparkles, ShieldCheck } from "lucide-react";
 import whaleIcon from "../../assets/icon/whaleicon.png";
+import { StressGraph } from "./StressGraph";
 import {
-  VerticalStressMeter,
   StressLevelType,
   STRESS_LEVELS,
 } from "./VerticalStressMeter";
@@ -46,10 +46,6 @@ export const StressResultScreen: React.FC<StressResultScreenProps> = ({
       className="w-full h-full flex flex-col justify-between p-6 select-none relative overflow-hidden bg-linear-to-br from-[#ebf3fe] via-[#f5f9ff] to-[#e1edfe] text-[#2c3e50]"
       style={{ fontFamily: "'Inter', 'Noto Sans Thai', sans-serif" }}
     >
-      {/* Background Glow Effects */}
-      <div className="absolute top-10 left-20 w-48 h-48 bg-sky-200/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-20 w-64 h-64 bg-indigo-200/25 rounded-full blur-3xl pointer-events-none" />
-
       {/* ────────── 1. HEADER BAR ────────── */}
       <header className="flex items-center justify-between z-10 bg-white/75 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white shadow-sm shrink-0">
         <div className="flex items-center gap-3">
@@ -75,18 +71,9 @@ export const StressResultScreen: React.FC<StressResultScreenProps> = ({
 
       {/* ────────── 2. MAIN LANDSCAPE CONTENT (SPLIT LEFT/RIGHT) ────────── */}
       <div className="flex-1 flex gap-5 my-4 z-10 min-h-0">
-        {/* LEFT PANEL: Stress Meter Gauge */}
-        <div className="w-72 bg-white/85 backdrop-blur-md rounded-3xl p-4 border border-white shadow-md flex flex-col items-center justify-center shrink-0 relative overflow-hidden">
-          <div className="text-center mb-2">
-            <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-100 uppercase tracking-wider">
-              Stress Meter
-            </span>
-          </div>
-
-          <VerticalStressMeter
-            currentLevel={measuredLevel}
-            stressPercentage={stressPercentage}
-          />
+        {/* LEFT PANEL: Stress Meter Line Graph (Expanded Full Area) */}
+        <div className="flex-[1.3] min-w-0 flex items-center justify-center min-h-0">
+          <StressGraph currentPercentage={stressPercentage} />
         </div>
 
         {/* RIGHT PANEL: Result Details, Advice & Actions */}

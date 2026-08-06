@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, Volume2, VolumeX, Pause, Play, Music } from "lucide-react";
+import { ChevronLeft, Volume2, VolumeX, Pause, Play, Music, BarChart2 } from "lucide-react";
 import gameBg1 from "../../assets/game_bg_1.png";
 import whaleIcon from "../../assets/icon/whaleicon.png";
 import { BGMTrack, Particle, RippleEffect as Ripple, FloatingText } from "../../types/game";
 import { BGM_OPTIONS, AFFIRMATION_MESSAGES } from "../../constants/game";
 import { soundManager as sounds } from "../../utils/audioSynth";
+import { StressFloatingWidget } from "../ui/StressFloatingWidget";
+import { StressGraph } from "../stress/StressGraph";
 
 export type { BGMTrack };
 
@@ -51,6 +53,7 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [poppedCount, setPoppedCount] = useState<number>(0);
   const [secondsPlayed, setSecondsPlayed] = useState<number>(0);
+  const [showGraphModal, setShowGraphModal] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [selectedTrack, setSelectedTrack] = useState<BGMTrack>("piano");
@@ -812,6 +815,17 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
 
         {/* Right Side Control Buttons */}
         <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Stress Meter Graph Toggle */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setShowGraphModal(!showGraphModal)}
+            className="w-10 h-10 bg-white/90 hover:bg-white text-slate-700 rounded-full shadow-md border border-sky-100 flex items-center justify-center cursor-pointer transition backdrop-blur-md"
+            title="ดูดีไซน์กราฟวัดความเครียด"
+          >
+            <BarChart2 className="w-5 h-5 text-sky-600" />
+          </motion.button>
+
           {/* Audio Mute/Unmute */}
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -856,6 +870,9 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
         />
       </div>
 
+      {/* FLOATING STRESS LEVEL WIDGET */}
+      <StressFloatingWidget statusText="กำลังลดลง" className="absolute bottom-5 left-5 z-30 opacity-90 hover:opacity-100 transition pointer-events-auto" />
+
       {/* BOTTOM FLOATING AFFIRMATION TOAST (100% Matching Image Spec) */}
       <footer className="relative z-20 p-4 flex justify-center pointer-events-none mb-2">
         <AnimatePresence mode="wait">
@@ -876,6 +893,35 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
           </motion.div>
         </AnimatePresence>
       </footer>
+
+      {/* STRESS GRAPH MODAL */}
+      <AnimatePresence>
+        {showGraphModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-xs pointer-events-auto"
+            onClick={() => setShowGraphModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-xl h-96 relative"
+            >
+              <button
+                onClick={() => setShowGraphModal(false)}
+                className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center border border-white/20 z-50 hover:bg-slate-700 shadow-lg cursor-pointer text-xs"
+              >
+                ✕
+              </button>
+              <StressGraph transparent={true} currentPercentage={32} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
