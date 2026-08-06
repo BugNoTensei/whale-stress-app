@@ -917,11 +917,24 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // ===== DRAW WHALE SHARK (player) =====
       const ws = whaleRef.current;
-      ctx.save(); ctx.translate(ws.x, ws.y);
-      const facing = Math.cos(ws.angle) >= 0 ? 1 : -1;
-      ctx.scale(facing, 1);
-      const renderAngle = Math.abs(ws.angle) < Math.PI / 2 ? ws.angle : ws.angle > 0 ? ws.angle - Math.PI : ws.angle + Math.PI;
-      ctx.rotate(renderAngle * facing * 0.38);
+      ctx.save();
+      ctx.translate(ws.x, ws.y);
+
+      // Facing orientation calculation (whaleicon.png naturally faces left)
+      const isFacingRight = Math.cos(ws.angle) >= 0;
+      const facingX = isFacingRight ? -1 : 1;
+
+      // Pitch calculation (up/down rotation without upside-down inversion)
+      let pitchAngle = ws.angle;
+      if (isFacingRight) {
+        pitchAngle = ws.angle;
+      } else {
+        pitchAngle = ws.angle > 0 ? ws.angle - Math.PI : ws.angle + Math.PI;
+      }
+      const clampedPitch = Math.max(-0.42, Math.min(0.42, pitchAngle));
+
+      ctx.scale(facingX, 1);
+      ctx.rotate(clampedPitch * (isFacingRight ? -1 : 1));
 
       // Glow aura
       const wglow = ctx.createRadialGradient(0, 0, 10, 0, 0, ws.size * 1.45);
@@ -929,9 +942,12 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
       wglow.addColorStop(1, "rgba(147,197,253,0)");
       ctx.fillStyle = wglow; ctx.beginPath(); ctx.arc(0, 0, ws.size * 1.45, 0, Math.PI * 2); ctx.fill();
 
-      // Draw whale icon or fallback
+      // Draw whale icon with natural aspect ratio to prevent squishing/distortion
       if (wsImg.complete && wsImg.naturalWidth > 0) {
-        ctx.drawImage(wsImg, -ws.size, -ws.size * 0.72, ws.size * 2, ws.size * 1.45);
+        const imgAspect = wsImg.naturalWidth / wsImg.naturalHeight;
+        const drawW = ws.size * 2.3;
+        const drawH = drawW / imgAspect;
+        ctx.drawImage(wsImg, -drawW / 2, -drawH / 2, drawW, drawH);
       } else {
         // Fallback drawn whale
         ctx.fillStyle = "#1e40af";
