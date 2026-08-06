@@ -106,23 +106,10 @@ export const StressGraph: React.FC<StressGraphProps> = ({
 
       {/* 2. Main Line Chart SVG Container (100% Full Width & Height) */}
       <div className="relative flex-1 w-full flex items-center justify-center my-1">
-        {/* Y-axis percentage labels overlay */}
-        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] font-bold text-slate-400 pointer-events-none z-10">
-          <span>100%</span>
-          <span>80%</span>
-          <span className="text-rose-600 font-extrabold">
-            {currentPercentage}%
-          </span>
-          <span>60%</span>
-          <span>40%</span>
-          <span>20%</span>
-          <span>0%</span>
-        </div>
-
         {/* Chart SVG filling 100% container */}
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-full overflow-visible ml-7"
+          className="w-full h-full overflow-visible"
         >
           <defs>
             {/* Multi-color Gradient Fill for Area under curve */}
@@ -142,20 +129,38 @@ export const StressGraph: React.FC<StressGraphProps> = ({
             </linearGradient>
           </defs>
 
-          {/* Horizontal Grid Lines */}
-          {[0, 0.2, 0.4, 0.6, 0.8, 1.0].map((ratio, idx) => {
-            const gy = padY + ratio * graphH;
+          {/* Y-axis Static Grid Labels (Strictly ordered 100% -> 0%) */}
+          {[
+            { ratio: 0, label: "100%" },
+            { ratio: 0.2, label: "80%" },
+            { ratio: 0.4, label: "60%" },
+            { ratio: 0.6, label: "40%" },
+            { ratio: 0.8, label: "20%" },
+            { ratio: 1.0, label: "0%" },
+          ].map((item, idx) => {
+            const gy = padY + item.ratio * graphH;
             return (
-              <line
-                key={idx}
-                x1={padX}
-                y1={gy}
-                x2={W - padX}
-                y2={gy}
-                stroke="#e2e8f0"
-                strokeWidth="1"
-                strokeDasharray={ratio === 0 || ratio === 1.0 ? "" : "3,3"}
-              />
+              <g key={idx}>
+                <line
+                  x1={padX}
+                  y1={gy}
+                  x2={W - padX}
+                  y2={gy}
+                  stroke="#e2e8f0"
+                  strokeWidth="1"
+                  strokeDasharray={item.ratio === 0 || item.ratio === 1.0 ? "" : "3,3"}
+                />
+                <text
+                  x={padX - 8}
+                  y={gy + 3}
+                  fill="#94a3b8"
+                  fontSize="9"
+                  fontWeight="bold"
+                  textAnchor="end"
+                >
+                  {item.label}
+                </text>
+              </g>
             );
           })}
 
@@ -169,6 +174,28 @@ export const StressGraph: React.FC<StressGraphProps> = ({
             strokeWidth="1.5"
             strokeDasharray="5,4"
           />
+
+          {/* Current Percentage Dynamic Y-Axis Red Badge */}
+          <g transform={`translate(${padX - 8}, ${currentY})`}>
+            <rect
+              x="-30"
+              y="-7"
+              width="28"
+              height="14"
+              rx="4"
+              fill="#ef4444"
+            />
+            <text
+              x="-16"
+              y="3"
+              fill="#ffffff"
+              fontSize="9"
+              fontWeight="900"
+              textAnchor="middle"
+            >
+              {currentPercentage}%
+            </text>
+          </g>
 
           {/* Area Fill */}
           <path d={areaD} fill="url(#stressAreaGrad)" />
