@@ -122,6 +122,7 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
   const lastMouseMoveRef = useRef(performance.now());
   const soundCooldownRef = useRef(0);
   const playSecondsRef = useRef(0);
+  const cameraXRef = useRef(0);
 
   // Focus mode timer ref
   const focusModeTimerRef = useRef<any>(null);
@@ -421,9 +422,21 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
       const t = performance.now() * 0.001;
       ctx.clearRect(0, 0, W(), H());
 
-      // --- BACKGROUND ---
+      // Helper for infinite horizontal wrapping
+      const cameraX = cameraXRef.current;
+      const getRenderX = (x: number, parallaxFactor = 1.0) => {
+        const w = W();
+        const relX = (x - cameraX * parallaxFactor) % w;
+        return relX < 0 ? relX + w : relX;
+      };
+
+      // --- BACKGROUND (Infinite Horizontal Tiling) ---
       if (bgImg.complete && bgImg.naturalWidth > 0) {
-        ctx.drawImage(bgImg, 0, 0, W(), H());
+        const bgW = W();
+        const bgOffsetX = -((cameraX % bgW) + bgW) % bgW;
+        ctx.drawImage(bgImg, bgOffsetX - bgW, 0, bgW, H());
+        ctx.drawImage(bgImg, bgOffsetX, 0, bgW, H());
+        ctx.drawImage(bgImg, bgOffsetX + bgW, 0, bgW, H());
       } else {
         const grd = ctx.createLinearGradient(0, 0, 0, H());
         grd.addColorStop(0, "#b3e5fc"); grd.addColorStop(0.5, "#4fc3f7"); grd.addColorStop(1, "#0277bd");
@@ -439,7 +452,7 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
       // --- UNDERWATER CAUSTIC LIGHT (Feature 1) ---
       causticRef.current.forEach(c => {
         c.phase += 0.008 * c.speed;
-        const cx = c.x + Math.sin(c.phase) * 30;
+        const cx = getRenderX(c.x + Math.sin(c.phase) * 30, 0.85);
         const cy = c.y + Math.cos(c.phase * 0.7) * 15;
         const alpha = Math.sin(c.phase * 1.3) * 0.04 + 0.06;
         const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, c.radius);
@@ -457,7 +470,8 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
       // --- SUNLIGHT RAYS ---
       ctx.save();
       for (let i = 0; i < 5; i++) {
-        const rx = (W() / 5) * i + Math.sin(t * 0.32 + i) * 28;
+        const baseRx = (W() / 5) * i + Math.sin(t * 0.32 + i) * 28;
+        const rx = getRenderX(baseRx, 0.3);
         const op = Math.sin(t * 0.38 + i * 1.2) * 0.03 + 0.05;
         const rg = ctx.createLinearGradient(rx, 0, rx + 80, H());
         rg.addColorStop(0, `rgba(255,255,255,${op * 2.2})`);
@@ -482,8 +496,19 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
         ws.isIdle = timeSinceMove > 5000;
 
         if (!ws.isIdle) {
-          ws.x += dx * 0.042;
-          ws.y += dy * 0.042;
+          const moveX = dx * 0.042;
+          const moveY = dy * 0.042;
+          ws.x += moveX;
+          ws.y += moveY;
+
+          // Infinite camera scrolling as whale swims left/right
+          cameraXRef.current += moveX * 0.75;
+
+          // Keep whale shark within comfortable screen boundaries while ocean background & environment scroll endlessly
+          const margin = 120;
+          if (ws.x < margin) ws.x = margin;
+          if (ws.x > W() - margin) ws.x = W() - margin;
+
           ws.angle = Math.atan2(dy, dx);
           ws.tailPhase += 0.09;
           ws.idleTimer = 0;
@@ -682,29 +707,32 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // Plankton
       planktonRef.current.forEach(p => {
+        const renderX = getRenderX(p.x, 1.1);
         ctx.save(); ctx.globalAlpha = p.alpha;
         ctx.fillStyle = "rgba(180,230,255,0.9)";
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(renderX, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
       });
 
       // Seaweed
       ctx.save(); ctx.lineWidth = 5; ctx.lineCap = "round";
       seaweedRef.current.forEach(sw => {
+        const renderX = getRenderX(sw.x, 1.0);
         ctx.strokeStyle = sw.color;
         const sway = Math.sin(t * sw.speed + sw.phase) * 13;
         ctx.beginPath();
-        ctx.moveTo(sw.x, H());
-        ctx.quadraticCurveTo(sw.x + sway, H() - sw.height / 2, sw.x + sway * 1.5, H() - sw.height);
+        ctx.moveTo(renderX, H());
+        ctx.quadraticCurveTo(renderX + sway, H() - sw.height / 2, renderX + sway * 1.5, H() - sw.height);
         ctx.stroke();
       });
       ctx.restore();
 
       // Corals
       coralsRef.current.forEach(c => {
+        const renderX = getRenderX(c.x, 1.0);
         ctx.save();
         const sway = Math.sin(t * 0.65 + c.swayPhase) * 1.8;
-        ctx.translate(c.x, c.y); ctx.rotate(sway * 0.014);
+        ctx.translate(renderX, c.y); ctx.rotate(sway * 0.014);
         ctx.fillStyle = c.color; ctx.strokeStyle = c.color;
         ctx.globalAlpha = 0.85;
         if (c.type === "branch") {
@@ -724,7 +752,8 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // Starfish (Feature 7)
       starfishRef.current.forEach(sf => {
-        ctx.save(); ctx.translate(sf.x, sf.y); ctx.rotate(sf.rotation);
+        const renderX = getRenderX(sf.x, 1.0);
+        ctx.save(); ctx.translate(renderX, sf.y); ctx.rotate(sf.rotation);
         ctx.fillStyle = sf.color; ctx.globalAlpha = 0.75;
         for (let arm = 0; arm < 5; arm++) {
           const a = (arm / 5) * Math.PI * 2 - Math.PI / 2;
@@ -739,7 +768,8 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // Crabs (Feature 7)
       crabsRef.current.forEach(c => {
-        ctx.save(); ctx.translate(c.x, c.y); ctx.globalAlpha = 0.75;
+        const renderX = getRenderX(c.x, 1.0);
+        ctx.save(); ctx.translate(renderX, c.y); ctx.globalAlpha = 0.75;
         const w = c.walkPhase;
         ctx.fillStyle = "#f97316";
         ctx.beginPath(); ctx.ellipse(0, 0, c.size, c.size * 0.65, 0, 0, Math.PI * 2); ctx.fill();
@@ -754,12 +784,13 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // Ocean Bubbles
       bubblesRef.current.forEach(b => {
+        const renderX = getRenderX(b.x, 0.9);
         ctx.save(); ctx.globalAlpha = b.alpha;
-        const bg2 = ctx.createRadialGradient(b.x - b.radius * 0.3, b.y - b.radius * 0.3, b.radius * 0.05, b.x, b.y, b.radius);
+        const bg2 = ctx.createRadialGradient(renderX - b.radius * 0.3, b.y - b.radius * 0.3, b.radius * 0.05, renderX, b.y, b.radius);
         bg2.addColorStop(0, "rgba(255,255,255,0.9)");
         bg2.addColorStop(0.5, "rgba(200,235,255,0.5)");
         bg2.addColorStop(1, "rgba(180,220,255,0.15)");
-        ctx.fillStyle = bg2; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bg2; ctx.beginPath(); ctx.arc(renderX, b.y, b.radius, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = "rgba(255,255,255,0.55)"; ctx.lineWidth = 1; ctx.stroke();
         ctx.restore();
       });
@@ -785,31 +816,33 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // Jellyfish
       jellyfishRef.current.forEach(j => {
+        const renderX = getRenderX(j.x, 0.7);
         ctx.save();
         const pulse = Math.sin(j.pulsePhase) * 0.1 + 1;
         const rx = j.radius * pulse, ry = j.radius * pulse * 0.72;
-        const jglow = ctx.createRadialGradient(j.x, j.y, 0, j.x, j.y, rx * 1.7);
+        const jglow = ctx.createRadialGradient(renderX, j.y, 0, renderX, j.y, rx * 1.7);
         jglow.addColorStop(0, j.color.replace("0.65", String(j.glowAlpha)));
         jglow.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = jglow; ctx.beginPath(); ctx.ellipse(j.x, j.y, rx * 1.7, ry * 1.7, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = j.color; ctx.beginPath(); ctx.ellipse(j.x, j.y, rx, ry, 0, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = jglow; ctx.beginPath(); ctx.ellipse(renderX, j.y, rx * 1.7, ry * 1.7, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = j.color; ctx.beginPath(); ctx.ellipse(renderX, j.y, rx, ry, 0, Math.PI, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = j.color.replace("0.65", "0.35"); ctx.lineWidth = 1.4;
         for (let ti = 0; ti < 6; ti++) {
-          const tx = j.x + (ti - 2.5) * (rx / 3);
+          const tx = renderX + (ti - 2.5) * (rx / 3);
           ctx.beginPath(); ctx.moveTo(tx, j.y);
           ctx.bezierCurveTo(tx + Math.sin(t + ti) * 6, j.y + 12, tx + Math.sin(t + ti + 1) * 8, j.y + 24, tx + Math.sin(t + ti) * 4, j.y + 32);
           ctx.stroke();
         }
         if (j.sparkleTimer > 0) {
           ctx.fillStyle = "rgba(255,255,200,0.8)";
-          for (let s = 0; s < 4; s++) { const sa = (s / 4) * Math.PI * 2 + t * 3; ctx.beginPath(); ctx.arc(j.x + Math.cos(sa) * (rx + 8), j.y + Math.sin(sa) * (ry + 6), 3, 0, Math.PI * 2); ctx.fill(); }
+          for (let s = 0; s < 4; s++) { const sa = (s / 4) * Math.PI * 2 + t * 3; ctx.beginPath(); ctx.arc(renderX + Math.cos(sa) * (rx + 8), j.y + Math.sin(sa) * (ry + 6), 3, 0, Math.PI * 2); ctx.fill(); }
         }
         ctx.restore();
       });
 
       // Sea Turtles
       turtlesRef.current.forEach(tu => {
-        ctx.save(); ctx.translate(tu.x, tu.y);
+        const renderX = getRenderX(tu.x, 0.7);
+        ctx.save(); ctx.translate(renderX, tu.y);
         if (tu.direction === -1) ctx.scale(-1, 1);
         const shGrad = ctx.createRadialGradient(0, -2, 4, 0, -2, 22);
         shGrad.addColorStop(0, "#6ee7b7"); shGrad.addColorStop(1, "#059669");
@@ -830,9 +863,10 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
       // Fish (main shoal)
       fishesRef.current.forEach(f => {
+        const renderX = getRenderX(f.x, 1.0);
         ctx.save();
         const fdir = f.vx >= 0 ? 1 : -1;
-        ctx.translate(f.x, f.y); ctx.scale(fdir, 1);
+        ctx.translate(renderX, f.y); ctx.scale(fdir, 1);
         ctx.fillStyle = f.color;
         ctx.beginPath(); ctx.ellipse(0, 0, f.size, f.size * 0.5, 0, 0, Math.PI * 2); ctx.fill();
         const tw = Math.sin(f.tailPhase) * 4;

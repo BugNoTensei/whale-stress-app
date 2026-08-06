@@ -11,6 +11,7 @@ import { StressLevelType } from "./components/stress/VerticalStressMeter";
 import { GameSelectionScreen } from "./components/games/GameSelectionScreen";
 import { BubblePopGameScreen } from "./components/games/BubblePopGameScreen";
 import WhaleOceanGameScreen from "./components/games/WhaleOceanGameScreen";
+import RelaxationMusicScreen from "./components/music/RelaxationMusicScreen";
 
 // Helper function for display Hz-synced smooth native window morphing animation (60Hz, 120Hz, 144Hz ProMotion)
 const animateWindowSize = async (
@@ -75,7 +76,7 @@ export default function App() {
   const [isEvaluating, setIsEvaluating] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<
-    "home" | "stress_result" | "games" | "bubble_pop_game" | "whale_ocean_game"
+    "home" | "stress_result" | "games" | "bubble_pop_game" | "whale_ocean_game" | "music"
   >("home");
   const [measuredLevel, setMeasuredLevel] = useState<StressLevelType>("medium");
   const [measuredPercentage, setMeasuredPercentage] = useState<number>(50);
@@ -90,16 +91,18 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const isLandscape = currentView === "games" || currentView === "bubble_pop_game" || currentView === "whale_ocean_game";
+  const isLandscape = currentView === "games" || currentView === "bubble_pop_game" || currentView === "whale_ocean_game" || currentView === "music";
 
-  // Smooth window morphing effect when entering/exiting landscape games screen
+  // Smooth window morphing effect when entering/exiting landscape screens
   useEffect(() => {
-    if (isLandscape) {
+    if (currentView === "music") {
+      animateWindowSize(1100, 680, 380);
+    } else if (isLandscape) {
       animateWindowSize(980, 640, 380);
     } else {
       animateWindowSize(400, 720, 380);
     }
-  }, [isLandscape]);
+  }, [isLandscape, currentView]);
 
   const handleOpenStressResult = () => {
     const levels: StressLevelType[] = [
@@ -127,14 +130,14 @@ export default function App() {
       {/* Morphing App Frame with Synchronized Liquid Cubic Motion */}
       <motion.div
         animate={{
-          width: isLandscape ? 980 : 400,
-          height: isLandscape ? 640 : 720,
+          width: isLandscape ? (currentView === "music" ? 1100 : 980) : 400,
+          height: isLandscape ? (currentView === "music" ? 680 : 640) : 720,
           borderRadius: isLandscape ? 28 : 36,
         }}
         transition={{ duration: 0.38, ease: [0.215, 0.61, 0.355, 1] }}
         className="bg-[#f4f8ff] text-[#2c3e50] flex flex-col font-sans select-none overflow-hidden relative shadow-[0_20px_60px_rgba(91,139,241,0.22)] border border-white/90 p-3.5 max-w-full max-h-full"
       >
-        {/* Hide default header when on games landscape screen */}
+        {/* Hide default header when on landscape screens */}
         {!isLandscape && (
           <header className="w-full flex justify-between items-center z-10 px-2 py-1 max-w-sm mx-auto shrink-0">
             <motion.button
@@ -159,79 +162,90 @@ export default function App() {
           </header>
         )}
 
-      <AnimatePresence mode="wait">
-        {currentView === "stress_result" ? (
-          <StressResultScreen
-            key="stress_result"
-            measuredLevel={measuredLevel}
-            stressPercentage={measuredPercentage}
-            onSave={(level) => {
-              setToastMessage(
-                `บันทึกระดับความเครียด (${level}) เรียบร้อยแล้ว 💙`,
-              );
-              setCurrentView("home");
-              setTimeout(() => setToastMessage(null), 3000);
-            }}
-            onCancel={() => setCurrentView("home")}
-          />
-        ) : currentView === "whale_ocean_game" ? (
-          <motion.div
-            key="whale_ocean_game_view"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
-          >
-            <WhaleOceanGameScreen
-              onBackToHome={() => setCurrentView("games")}
-            />
-          </motion.div>
-        ) : currentView === "bubble_pop_game" ? (
-          <motion.div
-            key="bubble_pop_game_view"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
-          >
-            <BubblePopGameScreen
-              onBackToHome={() => setCurrentView("games")}
-            />
-          </motion.div>
-        ) : currentView === "games" ? (
-          <motion.div
-            key="games_view"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
-          >
-            <GameSelectionScreen
-              onBackToHome={() => setCurrentView("home")}
-              onTabChange={(tab) => {
-                if (tab === "home") setCurrentView("home");
-                else if (tab === "games") setCurrentView("games");
-                else {
-                  setToastMessage(`ระบบ "${tab}" กำลังอยู่ระหว่างการพัฒนา 🐳`);
-                  setTimeout(() => setToastMessage(null), 3000);
-                }
+        <AnimatePresence mode="popLayout">
+          {currentView === "music" ? (
+            <motion.div
+              key="music_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full z-10 gpu-accelerated"
+            >
+              <RelaxationMusicScreen onBackToHome={() => setCurrentView("home")} />
+            </motion.div>
+          ) : currentView === "stress_result" ? (
+            <StressResultScreen
+              key="stress_result"
+              measuredLevel={measuredLevel}
+              stressPercentage={measuredPercentage}
+              onSave={(level) => {
+                setToastMessage(
+                  `บันทึกระดับความเครียด (${level}) เรียบร้อยแล้ว 💙`,
+                );
+                setCurrentView("home");
+                setTimeout(() => setToastMessage(null), 3000);
               }}
-              onSelectGame={(gameId) => {
-                if (gameId === "bubble_pop") {
-                  setCurrentView("bubble_pop_game");
-                } else if (gameId === "whale_ocean") {
-                  setCurrentView("whale_ocean_game");
-                } else {
-                  setToastMessage(`เกมนี้กำลังอยู่ระหว่างการพัฒนา 🐳`);
-                  setTimeout(() => setToastMessage(null), 3000);
-                }
-              }}
+              onCancel={() => setCurrentView("home")}
             />
-          </motion.div>
-        ) : (
+          ) : currentView === "whale_ocean_game" ? (
+            <motion.div
+              key="whale_ocean_game_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
+            >
+              <WhaleOceanGameScreen
+                onBackToHome={() => setCurrentView("games")}
+              />
+            </motion.div>
+          ) : currentView === "bubble_pop_game" ? (
+            <motion.div
+              key="bubble_pop_game_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
+            >
+              <BubblePopGameScreen
+                onBackToHome={() => setCurrentView("games")}
+              />
+            </motion.div>
+          ) : currentView === "games" ? (
+            <motion.div
+              key="games_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full flex items-center justify-center z-10 gpu-accelerated"
+            >
+              <GameSelectionScreen
+                onBackToHome={() => setCurrentView("home")}
+                onTabChange={(tab) => {
+                  if (tab === "home") setCurrentView("home");
+                  else if (tab === "games") setCurrentView("games");
+                  else {
+                    setToastMessage(`ระบบ "${tab}" กำลังอยู่ระหว่างการพัฒนา 🐳`);
+                    setTimeout(() => setToastMessage(null), 3000);
+                  }
+                }}
+                onSelectGame={(gameId) => {
+                  if (gameId === "bubble_pop") {
+                    setCurrentView("bubble_pop_game");
+                  } else if (gameId === "whale_ocean") {
+                    setCurrentView("whale_ocean_game");
+                  } else {
+                    setToastMessage(`เกมนี้กำลังอยู่ระหว่างการพัฒนา 🐳`);
+                    setTimeout(() => setToastMessage(null), 3000);
+                  }
+                }}
+              />
+            </motion.div>
+          ) : (
           <motion.main
             key="home"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -347,7 +361,7 @@ export default function App() {
               <motion.button
                 whileHover={{ scale: 1.03, y: -1 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => alert("เปิดเครื่องเล่นเพลง")}
+                onClick={() => setCurrentView("music")}
                 className="flex items-center justify-start gap-3 bg-white/95 hover:bg-white p-3.5 rounded-3xl shadow-[0_6px_20px_rgba(180,205,240,0.35)] transition border border-white cursor-pointer select-none"
               >
                 <div className="w-12 h-12 bg-[#dce8f8] rounded-full flex items-center justify-center shrink-0">
@@ -386,8 +400,8 @@ export default function App() {
               </motion.button>
             </div>
           </motion.main>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
 
       <div className="absolute bottom-0 left-0 w-full h-48 pointer-events-none z-0 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-t from-[#8ec5fc]/60 via-[#e0c3fc]/30 to-transparent"></div>

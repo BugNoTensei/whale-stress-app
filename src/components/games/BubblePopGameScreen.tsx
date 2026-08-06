@@ -865,7 +865,7 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="bg-white/85 backdrop-blur-md border border-white/90 rounded-full px-6 py-3 shadow-xl flex items-center gap-3 text-slate-700 text-xs font-extrabold max-w-lg pointer-events-auto border-sky-100/60"
+            className="bg-white/85 backdrop-blur-md border border-sky-100/60 rounded-full px-6 py-3 shadow-xl flex items-center gap-3 text-slate-700 text-xs font-extrabold max-w-lg pointer-events-auto"
           >
             <div className="w-7 h-7 bg-[#8c67e8] text-white rounded-full flex items-center justify-center text-sm font-black shrink-0 shadow-sm">
               🙂
