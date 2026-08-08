@@ -111,8 +111,12 @@ interface AromaDiffuserScreenProps {
   onBackToHome: () => void;
 }
 
-export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScreenProps) {
-  const [selectedProfile, setSelectedProfile] = useState<AromaProfile>(AROMA_PROFILES[0]);
+export default function AromaDiffuserScreen({
+  onBackToHome,
+}: AromaDiffuserScreenProps) {
+  const [selectedProfile, setSelectedProfile] = useState<AromaProfile>(
+    AROMA_PROFILES[0],
+  );
   const [status, setStatus] = useState<DiffuserStatus>("idle");
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [deviceConnected] = useState(true);
@@ -152,42 +156,61 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
 
   return (
     <div
-      className={`w-full h-full flex flex-col select-none relative overflow-hidden bg-gradient-to-br ${selectedProfile.bg} transition-all duration-700`}
+      className={`w-full h-full flex flex-col select-none relative overflow-hidden bg-linear-to-br ${selectedProfile.bg} transition-all duration-700`}
       style={{ fontFamily: "'Inter', 'Noto Sans Thai', sans-serif" }}
     >
       {/* Ambient Background Orbs */}
       <motion.div
-        animate={isActive ? { scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] } : { scale: 1, opacity: 0.2 }}
+        animate={
+          isActive
+            ? { scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }
+            : { scale: 1, opacity: 0.2 }
+        }
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none"
         style={{ background: selectedProfile.color + "40" }}
       />
       <motion.div
-        animate={isActive ? { scale: [1.1, 1, 1.1], opacity: [0.2, 0.4, 0.2] } : { scale: 1, opacity: 0.15 }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        animate={
+          isActive
+            ? { scale: [1.1, 1, 1.1], opacity: [0.2, 0.4, 0.2] }
+            : { scale: 1, opacity: 0.15 }
+        }
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1,
+        }}
         className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl pointer-events-none"
         style={{ background: selectedProfile.color + "30" }}
       />
 
       {/* Floating Scent Particles */}
       <AnimatePresence>
-        {isActive && [0, 1, 2, 3, 4, 5].map((i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 0 }}
-            animate={{ opacity: [0, 0.6, 0], y: -200 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 3.5, repeat: Infinity, delay: i * 0.7, ease: "easeOut" }}
-            className="absolute bottom-44 rounded-full pointer-events-none"
-            style={{
-              left: `calc(28% + ${(i - 2.5) * 18}px)`,
-              width: 10,
-              height: 10,
-              background: selectedProfile.color + "90",
-              filter: "blur(2px)",
-            }}
-          />
-        ))}
+        {isActive &&
+          [0, 1, 2, 3, 4, 5].map((i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: [0, 0.6, 0], y: -200 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 3.5,
+                repeat: Infinity,
+                delay: i * 0.7,
+                ease: "easeOut",
+              }}
+              className="absolute bottom-44 rounded-full pointer-events-none"
+              style={{
+                left: `calc(28% + ${(i - 2.5) * 18}px)`,
+                width: 10,
+                height: 10,
+                background: selectedProfile.color + "90",
+                filter: "blur(2px)",
+              }}
+            />
+          ))}
       </AnimatePresence>
 
       {/* Header */}
@@ -203,14 +226,24 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
         </motion.button>
 
         <div className="flex items-center gap-2">
-          <h1 className="text-sm font-black text-slate-800">Mouse Aroma Diffuser</h1>
+          <h1 className="text-sm font-black text-slate-800">
+            Mouse Aroma Diffuser
+          </h1>
           <WhaleSharkIcon className="w-5 h-3.5" />
         </div>
 
-        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border ${deviceConnected ? "bg-emerald-100 border-emerald-300 text-emerald-700" : "bg-red-100 border-red-300 text-red-700"}`}>
-          {deviceConnected
-            ? <><CheckCircle2 size={11} /> เชื่อมต่อแล้ว</>
-            : <><AlertCircle size={11} /> ไม่พบอุปกรณ์</>}
+        <div
+          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border ${deviceConnected ? "bg-emerald-100 border-emerald-300 text-emerald-700" : "bg-red-100 border-red-300 text-red-700"}`}
+        >
+          {deviceConnected ? (
+            <>
+              <CheckCircle2 size={11} /> เชื่อมต่อแล้ว
+            </>
+          ) : (
+            <>
+              <AlertCircle size={11} /> ไม่พบอุปกรณ์
+            </>
+          )}
         </div>
       </header>
 
@@ -219,37 +252,59 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
         {/* LEFT: Diffuser Visualizer */}
         <div className="flex flex-col items-center justify-center gap-4 w-72 shrink-0">
           <div className="relative flex items-center justify-center">
-            {isActive && [0, 1, 2].map((i) => (
-              <motion.div
-                key={i}
-                animate={{ scale: [1, 1.6], opacity: [0.4, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: i * 0.65, ease: "easeOut" }}
-                className="absolute rounded-full border-2"
-                style={{
-                  width: 140 + i * 20,
-                  height: 140 + i * 20,
-                  borderColor: selectedProfile.color + "80",
-                }}
-              />
-            ))}
+            {isActive &&
+              [0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  animate={{ scale: [1, 1.6], opacity: [0.4, 0] }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.65,
+                    ease: "easeOut",
+                  }}
+                  className="absolute rounded-full border-2"
+                  style={{
+                    width: 140 + i * 20,
+                    height: 140 + i * 20,
+                    borderColor: selectedProfile.color + "80",
+                  }}
+                />
+              ))}
 
             <motion.div
               animate={isActive ? { scale: [1, 1.04, 1] } : { scale: 1 }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="w-36 h-36 rounded-full flex flex-col items-center justify-center shadow-xl cursor-pointer relative overflow-hidden border-4 border-white/50"
-              style={{ background: `linear-gradient(135deg, ${selectedProfile.color}55, ${selectedProfile.accent}33)` }}
+              style={{
+                background: `linear-gradient(135deg, ${selectedProfile.color}55, ${selectedProfile.accent}33)`,
+              }}
               onClick={handleActivate}
             >
               <div
                 className="absolute inset-0 rounded-full"
-                style={{ background: `radial-gradient(circle at 35% 35%, white 0%, ${selectedProfile.color}22 60%, transparent 100%)` }}
+                style={{
+                  background: `radial-gradient(circle at 35% 35%, white 0%, ${selectedProfile.color}22 60%, transparent 100%)`,
+                }}
               />
-              <span className="text-4xl mb-1 z-10">{selectedProfile.emoji}</span>
-              <span className="text-xs font-extrabold z-10" style={{ color: selectedProfile.accent }}>
-                {isActivating ? "กำลังเปิด..." : isActive ? "กำลังปล่อยกลิ่น" : "กดเพื่อเปิด"}
+              <span className="text-4xl mb-1 z-10">
+                {selectedProfile.emoji}
+              </span>
+              <span
+                className="text-xs font-extrabold z-10"
+                style={{ color: selectedProfile.accent }}
+              >
+                {isActivating
+                  ? "กำลังเปิด..."
+                  : isActive
+                    ? "กำลังปล่อยกลิ่น"
+                    : "กดเพื่อเปิด"}
               </span>
               {isActive && (
-                <span className="text-[11px] font-bold z-10 mt-0.5" style={{ color: selectedProfile.accent }}>
+                <span
+                  className="text-[11px] font-bold z-10 mt-0.5"
+                  style={{ color: selectedProfile.accent }}
+                >
                   {formatTime(timeLeft)}
                 </span>
               )}
@@ -262,22 +317,43 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
             onClick={handleActivate}
             className="px-8 py-2.5 rounded-2xl text-sm font-black shadow-md transition cursor-pointer flex items-center gap-2 text-white"
             style={{
-              background: isActive ? "#ef4444" : `linear-gradient(135deg, ${selectedProfile.color}, ${selectedProfile.accent})`,
+              background: isActive
+                ? "#ef4444"
+                : `linear-gradient(135deg, ${selectedProfile.color}, ${selectedProfile.accent})`,
             }}
           >
             {isActivating ? (
-              <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}><Wind size={16} /></motion.div> กำลังเปิด...</>
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Wind size={16} />
+                </motion.div>{" "}
+                กำลังเปิด...
+              </>
             ) : isActive ? (
-              <><Zap size={16} /> หยุดปล่อยกลิ่น</>
+              <>
+                <Zap size={16} /> หยุดปล่อยกลิ่น
+              </>
             ) : (
-              <><Wind size={16} /> ปล่อยกลิ่น</>
+              <>
+                <Wind size={16} /> ปล่อยกลิ่น
+              </>
             )}
           </motion.button>
 
           <div className="w-full bg-white/50 backdrop-blur-sm rounded-2xl p-3 border border-white/60 space-y-2">
             <div className="flex justify-between text-[11px] text-slate-600 font-bold">
-              <span className="flex items-center gap-1"><Droplets size={11} className="text-sky-500" /> น้ำมันหอมระเหยคงเหลือ</span>
-              <span style={{ color: moistureLevel > 30 ? "#059669" : "#dc2626" }}>{moistureLevel}%</span>
+              <span className="flex items-center gap-1">
+                <Droplets size={11} className="text-sky-500" />{" "}
+                น้ำมันหอมระเหยคงเหลือ
+              </span>
+              <span
+                style={{ color: moistureLevel > 30 ? "#059669" : "#dc2626" }}
+              >
+                {moistureLevel}%
+              </span>
             </div>
             <div className="w-full h-2 bg-white/60 rounded-full overflow-hidden border border-white/40">
               <motion.div
@@ -285,21 +361,30 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
                 animate={{ width: `${moistureLevel}%` }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="h-full rounded-full"
-                style={{ background: `linear-gradient(to right, ${selectedProfile.color}, ${selectedProfile.accent})` }}
+                style={{
+                  background: `linear-gradient(to right, ${selectedProfile.color}, ${selectedProfile.accent})`,
+                }}
               />
             </div>
             {isActive && (
               <div className="flex justify-between text-[11px] text-slate-600 font-semibold mt-1">
                 <span>ลดความเครียดโดยประมาณ</span>
-                <span className="font-extrabold text-emerald-600">-{selectedProfile.stressReduction}%</span>
+                <span className="font-extrabold text-emerald-600">
+                  -{selectedProfile.stressReduction}%
+                </span>
               </div>
             )}
           </div>
         </div>
 
         {/* RIGHT: Profile List */}
-        <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-          <div className="text-xs font-extrabold text-slate-600 mb-1 uppercase tracking-wider">เลือกกลิ่นบำบัด (Aroma Profile)</div>
+        <div
+          className="flex-1 flex flex-col gap-2.5 overflow-y-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
+          <div className="text-xs font-extrabold text-slate-600 mb-1 uppercase tracking-wider">
+            เลือกกลิ่นบำบัด (Aroma Profile)
+          </div>
 
           {AROMA_PROFILES.map((profile) => {
             const isSelected = profile.id === selectedProfile.id;
@@ -316,13 +401,17 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
                   setSelectedProfile(profile);
                 }}
                 className={`w-full p-3 rounded-2xl border flex items-center gap-3 text-left transition cursor-pointer ${
-                  isSelected ? "bg-white/80 shadow-md" : "bg-white/40 border-white/50 hover:bg-white/60"
+                  isSelected
+                    ? "bg-white/80 shadow-md"
+                    : "bg-white/40 border-white/50 hover:bg-white/60"
                 }`}
                 style={isSelected ? { borderColor: profile.color } : {}}
               >
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 border-2 border-white shadow-sm"
-                  style={{ background: `linear-gradient(135deg, ${profile.color}44, ${profile.accent}22)` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${profile.color}44, ${profile.accent}22)`,
+                  }}
                 >
                   {profile.emoji}
                 </div>
@@ -330,20 +419,37 @@ export default function AromaDiffuserScreen({ onBackToHome }: AromaDiffuserScree
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-extrabold text-slate-800">
-                      {profile.nameTh} <span className="text-slate-400 font-normal">({profile.name})</span>
+                      {profile.nameTh}{" "}
+                      <span className="text-slate-400 font-normal">
+                        ({profile.name})
+                      </span>
                     </div>
-                    {isSelected && <CheckCircle2 size={14} style={{ color: profile.color }} />}
+                    {isSelected && (
+                      <CheckCircle2
+                        size={14}
+                        style={{ color: profile.color }}
+                      />
+                    )}
                   </div>
-                  <div className="text-[10px] text-slate-500 leading-snug mt-0.5 line-clamp-2">{profile.description}</div>
+                  <div className="text-[10px] text-slate-500 leading-snug mt-0.5 line-clamp-2">
+                    {profile.description}
+                  </div>
                   <div className="flex items-center gap-1 mt-1.5">
                     {[1, 2, 3, 4, 5].map((lvl) => (
                       <div
                         key={lvl}
                         className="w-2 h-2 rounded-full"
-                        style={{ background: lvl <= profile.intensity ? profile.color : "#e2e8f0" }}
+                        style={{
+                          background:
+                            lvl <= profile.intensity
+                              ? profile.color
+                              : "#e2e8f0",
+                        }}
                       />
                     ))}
-                    <span className="text-[9px] text-slate-400 ml-1">ความเข้มกลิ่น</span>
+                    <span className="text-[9px] text-slate-400 ml-1">
+                      ความเข้มกลิ่น
+                    </span>
                   </div>
                 </div>
               </motion.button>
