@@ -8,7 +8,9 @@ import {
   Volume2,
   Waves,
   MousePointer,
+  Gamepad2,
 } from "lucide-react";
+import { WhaleSharkIcon } from "../ui/WhaleSharkIcon";
 import gameBg1 from "../../assets/game_bg_1.png";
 import gameBg2 from "../../assets/game_bg_2.png";
 import whaleIcon from "../../assets/icon/whaleicon.png";
@@ -65,7 +67,7 @@ export const GameSelectionScreen: React.FC<GameSelectionScreenProps> = ({
             <h1 className="text-2xl font-black text-[#1f2d4d] tracking-tight">
               เกมคลายเครียด
             </h1>
-            <span className="text-2xl">🎮</span>
+            <Gamepad2 className="w-6 h-6 text-purple-600 inline-block" />
           </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
             เลือกเกมที่คุณชอบ เพื่อผ่อนคลายและลดความเครียด
@@ -206,7 +208,7 @@ export const GameSelectionScreen: React.FC<GameSelectionScreenProps> = ({
             {/* Left Glass Tags */}
             <div className="flex flex-col gap-1.5">
               <div className="bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full text-[11px] font-semibold text-white flex items-center gap-2 shadow-xs">
-                <span className="text-xs">🐳</span>
+                <WhaleSharkIcon className="w-5 h-3.5" />
                 <span>ควบคุมง่าย แค่ขยับเมาส์</span>
               </div>
               <div className="bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full text-[11px] font-semibold text-white flex items-center gap-2 shadow-xs">

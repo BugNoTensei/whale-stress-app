@@ -74,12 +74,30 @@ class PreferenceManager {
     return { ...this.prefs };
   }
 
+  private listeners: Set<(prefs: UserPreferences) => void> = new Set();
+
+  public subscribe(listener: (prefs: UserPreferences) => void) {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private notify() {
+    this.listeners.forEach((fn) => {
+      try {
+        fn(this.getPreferences());
+      } catch (e) {}
+    });
+  }
+
   public updatePreferences(partial: Partial<UserPreferences>) {
     this.prefs = { ...this.prefs, ...partial };
     this.save();
     if (partial.theme) {
       this.applyTheme(partial.theme);
     }
+    this.notify();
   }
 
   private save() {

@@ -10,6 +10,10 @@ import { GameSelectionScreen } from "./components/games/GameSelectionScreen";
 import { BubblePopGameScreen } from "./components/games/BubblePopGameScreen";
 import WhaleOceanGameScreen from "./components/games/WhaleOceanGameScreen";
 import RelaxationMusicScreen from "./components/music/RelaxationMusicScreen";
+import { StressAlertModal } from "./components/stress/StressAlertModal";
+import { useMouseStressDetector } from "./hooks/useMouseStressDetector";
+import AromaDiffuserScreen from "./components/aroma/AromaDiffuserScreen";
+import SelfRelaxationScreen from "./components/relaxation/SelfRelaxationScreen";
 
 // Helper function for display Hz-synced smooth native window morphing animation (60Hz, 120Hz, 144Hz ProMotion)
 const animateWindowSize = async (
@@ -77,12 +81,13 @@ export default function App() {
   const [isEvaluating, setIsEvaluating] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<
-    "home" | "stress_result" | "games" | "bubble_pop_game" | "whale_ocean_game" | "music"
+    "home" | "stress_result" | "games" | "bubble_pop_game" | "whale_ocean_game" | "music" | "aroma" | "self_relaxation"
   >("home");
   const [measuredLevel, setMeasuredLevel] = useState<StressLevelType>("medium");
   const [measuredPercentage, setMeasuredPercentage] = useState<number>(50);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const mouseDetector = useMouseStressDetector(15000);
   const updater = useUpdater();
 
   useEffect(() => {
@@ -166,7 +171,29 @@ export default function App() {
         )}
 
         <AnimatePresence mode="wait">
-          {currentView === "music" ? (
+          {currentView === "self_relaxation" ? (
+            <motion.div
+              key="self_relaxation_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full z-10 gpu-accelerated"
+            >
+              <SelfRelaxationScreen onBackToHome={() => setCurrentView("home")} />
+            </motion.div>
+          ) : currentView === "aroma" ? (
+            <motion.div
+              key="aroma_view"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full z-10 gpu-accelerated"
+            >
+              <AromaDiffuserScreen onBackToHome={() => setCurrentView("home")} />
+            </motion.div>
+          ) : currentView === "music" ? (
             <motion.div
               key="music_view"
               initial={{ opacity: 0, scale: 0.96 }}
@@ -262,15 +289,31 @@ export default function App() {
                   if (view === "stress_result") {
                     handleOpenStressResult();
                   } else {
-                    setCurrentView(view);
+                    setCurrentView(view as typeof currentView);
                   }
                 }}
                 onOpenSettings={() => setIsSettingsOpen(true)}
+                onTriggerStressAlert={mouseDetector.triggerTestAlert}
                 isEvaluating={isEvaluating}
               />
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Global Mouse Stress Alert Popup Mockup Modal */}
+        <StressAlertModal
+          isOpen={mouseDetector.isStressDetected}
+          stressPercentage={mouseDetector.detectedStressPct}
+          onClose={mouseDetector.dismissAlert}
+          onSelectOption={(action) => {
+            mouseDetector.dismissAlert();
+            if (action === "aroma") {
+              setCurrentView("aroma");
+            } else {
+              setCurrentView(action);
+            }
+          }}
+        />
 
       <div className="absolute bottom-0 left-0 w-full h-48 pointer-events-none z-0 overflow-hidden">
         <div className="absolute inset-0 bg-linear-to-t from-[#8ec5fc]/60 via-[#e0c3fc]/30 to-transparent"></div>

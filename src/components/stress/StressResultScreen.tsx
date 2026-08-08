@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import confetti from "canvas-confetti";
-import { Check, X, Sparkles, ShieldCheck } from "lucide-react";
+import { Check, X, Sparkles, ShieldCheck, BarChart2 } from "lucide-react";
 import whaleIcon from "../../assets/icon/whaleicon.png";
 import { StressGraph } from "./StressGraph";
 import {
@@ -54,7 +54,8 @@ export const StressResultScreen: React.FC<StressResultScreenProps> = ({
           </div>
           <div>
             <h1 className="text-sm font-extrabold text-[#1f2d4d] leading-none flex items-center gap-1.5">
-              ผลการประเมินสภาวะอารมณ์ 📊
+              <span>ผลการประเมินสภาวะอารมณ์</span>
+              <BarChart2 size={16} className="text-sky-500" />
             </h1>
             <p className="text-[10px] text-slate-400 font-medium mt-0.5">ระบบวิเคราะห์และประเมินระดับความเครียด</p>
           </div>
@@ -62,7 +63,7 @@ export const StressResultScreen: React.FC<StressResultScreenProps> = ({
 
         <button
           onClick={onCancel}
-          className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center border border-white shadow-sm transition"
+          className="w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center border border-white shadow-xs transition cursor-pointer"
           title="ปิดหน้าต่าง"
         >
           <X size={16} />
@@ -81,7 +82,7 @@ export const StressResultScreen: React.FC<StressResultScreenProps> = ({
           <div>
             {/* Header Badge */}
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-2xl">{currentConfig.emoji}</span>
+              <div className="p-1 rounded-full bg-slate-100">{currentConfig.emoji}</div>
               <div>
                 <div
                   className="text-lg font-black tracking-tight"

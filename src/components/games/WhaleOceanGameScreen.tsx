@@ -8,6 +8,7 @@ import { BGM_OPTIONS, PEACE_MESSAGES } from "../../constants/game";
 import { soundManager as sounds } from "../../utils/audioSynth";
 import { StressFloatingWidget } from "../ui/StressFloatingWidget";
 import { StressGraph } from "../stress/StressGraph";
+import { WhaleSharkIcon } from "../ui/WhaleSharkIcon";
 
 export type { BGMTrack };
 
@@ -1028,7 +1029,7 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
             <div className="wo-stat-sub">นาที</div>
           </div>
           <div className="wo-stat-card">
-            <div className="wo-stat-label">🌊 ความสงบ</div>
+            <div className="wo-stat-label">ความสงบ</div>
             <div className="wo-stat-value">{Math.round(calmScore)}%</div>
             <div className="wo-calm-bar"><div className="wo-calm-fill" style={{ width: `${calmScore}%` }} /></div>
           </div>
@@ -1036,7 +1037,7 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
 
         {/* TOP CENTER */}
         <div className="wo-title-badge">
-          <span className="wo-title-icon">🐋</span>
+          <WhaleSharkIcon className="w-7 h-5" />
           <div>
             <div className="wo-title-text">Whale Ocean</div>
             <div className="wo-title-sub">ผ่อนคลายไปกับโลกใต้ทะเล</div>
@@ -1101,7 +1102,10 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
             <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} className="wo-pause-card">
               <div className="wo-pause-icon">⏸</div>
               <div className="wo-pause-title">หยุดพักชั่วคราว</div>
-              <div className="wo-pause-sub">ฉลามวาฬรอคุณอยู่ใต้ทะเล 🐋</div>
+              <div className="wo-pause-sub flex items-center justify-center gap-1">
+                <span>ฉลามวาฬรอคุณอยู่ใต้ทะเล</span>
+                <WhaleSharkIcon className="w-5 h-3.5 inline-block" />
+              </div>
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} className="wo-resume-btn" onClick={() => setIsPaused(false)} id="wo-resume-btn">
                 <Play size={16} /> กลับไปว่ายน้ำ
               </motion.button>
@@ -1115,13 +1119,13 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
         {showGraphModal && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-xs pointer-events-auto"
+            className="fixed inset-0 z-50 flex items-center justify-center p-8 bg-black/40 backdrop-blur-xs pointer-events-auto"
             onClick={() => setShowGraphModal(false)}
           >
             <motion.div
               initial={{ scale: 0.9, y: 15 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 15 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-xl h-96 relative"
+              className="w-full max-w-3xl relative"
             >
               <button
                 onClick={() => setShowGraphModal(false)}
@@ -1142,9 +1146,13 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
         )}
       </AnimatePresence>
 
-      {/* FLOATING STRESS LEVEL WIDGET */}
+      {/* FLOATING STRESS LEVEL WIDGET (ORIGINAL CLEAN POSITION) */}
       {!isPaused && (
-        <StressFloatingWidget statusText="กำลังลดลง" className="absolute bottom-16 left-6 z-30 opacity-90 hover:opacity-100 transition pointer-events-auto" />
+        <StressFloatingWidget
+          statusText="กำลังลดลง"
+          storageKey="widget-pos-whale"
+          onClick={() => setShowGraphModal(true)}
+        />
       )}
 
       {/* BOTTOM BAR */}
@@ -1156,8 +1164,8 @@ export default function WhaleOceanGameScreen({ onBackToHome }: WhaleOceanGameScr
             </motion.div>
           ) : (
             <motion.div key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="wo-hint">
-              <span className="wo-hint-icon">💡</span>
-              <span>ขยับเมาส์เพื่อพาฉลามวาฬว่ายน้ำ หยุดนิ่ง 5 วินาทีเพื่อดูท่า Idle น่ารัก 🐋</span>
+              <span>ขยับเมาส์เพื่อพาฉลามวาฬว่ายน้ำ หยุดนิ่ง 5 วินาทีเพื่อดูท่า Idle น่ารัก</span>
+              <WhaleSharkIcon className="w-5 h-3.5 inline-block ml-1" />
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, Volume2, VolumeX, Pause, Play, Music, BarChart2 } from "lucide-react";
+import { ChevronLeft, Volume2, VolumeX, Pause, Play, Music, BarChart2, Smile } from "lucide-react";
 import gameBg1 from "../../assets/game_bg_1.png";
 import whaleIcon from "../../assets/icon/whaleicon.png";
 import { BGMTrack, Particle, RippleEffect as Ripple, FloatingText } from "../../types/game";
@@ -504,22 +504,32 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
         );
         ctx.fill();
 
-        // Inner Type Icon
+        // Inner Type Icon (Vector Shape Drawing)
         if (b.type === "heart") {
-          ctx.font = `${b.radius * 0.7}px sans-serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("💖", 0, 0);
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath();
+          const r = b.radius * 0.45;
+          ctx.arc(-r / 2, -r / 4, r / 2, Math.PI, 0, false);
+          ctx.arc(r / 2, -r / 4, r / 2, Math.PI, 0, false);
+          ctx.lineTo(0, r / 1.2);
+          ctx.closePath();
+          ctx.fill();
         } else if (b.type === "star") {
-          ctx.font = `${b.radius * 0.7}px sans-serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("✨", 0, 0);
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath();
+          const r = b.radius * 0.45;
+          for (let s = 0; s < 5; s++) {
+            ctx.lineTo(Math.cos(((18 + s * 72) * Math.PI) / 180) * r, -Math.sin(((18 + s * 72) * Math.PI) / 180) * r);
+            ctx.lineTo(Math.cos(((54 + s * 72) * Math.PI) / 180) * (r * 0.5), -Math.sin(((54 + s * 72) * Math.PI) / 180) * (r * 0.5));
+          }
+          ctx.closePath();
+          ctx.fill();
         } else if (b.type === "rainbow") {
-          ctx.font = `${b.radius * 0.6}px sans-serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("🌈", 0, 0);
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, b.radius * 0.4, Math.PI, 0);
+          ctx.stroke();
         }
 
         ctx.restore();
@@ -870,8 +880,12 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
         />
       </div>
 
-      {/* FLOATING STRESS LEVEL WIDGET */}
-      <StressFloatingWidget statusText="กำลังลดลง" className="absolute bottom-5 left-5 z-30 opacity-90 hover:opacity-100 transition pointer-events-auto" />
+      {/* FLOATING STRESS LEVEL WIDGET (ORIGINAL CLEAN POSITION) */}
+      <StressFloatingWidget
+        statusText="กำลังลดลง"
+        storageKey="widget-pos-bubble"
+        onClick={() => setShowGraphModal(true)}
+      />
 
       {/* BOTTOM FLOATING AFFIRMATION TOAST (100% Matching Image Spec) */}
       <footer className="relative z-20 p-4 flex justify-center pointer-events-none mb-2">
@@ -884,8 +898,8 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="bg-white/85 backdrop-blur-md border border-sky-100/60 rounded-full px-6 py-3 shadow-xl flex items-center gap-3 text-slate-700 text-xs font-extrabold max-w-lg pointer-events-auto"
           >
-            <div className="w-7 h-7 bg-[#8c67e8] text-white rounded-full flex items-center justify-center text-sm font-black shrink-0 shadow-sm">
-              🙂
+            <div className="w-7 h-7 bg-[#8c67e8] text-white rounded-full flex items-center justify-center shrink-0 shadow-xs">
+              <Smile size={16} />
             </div>
             <span className="text-slate-700 text-xs font-bold leading-normal">
               {currentAffirmation}
@@ -901,7 +915,7 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-xs pointer-events-auto"
+            className="fixed inset-0 z-50 flex items-center justify-center p-8 bg-black/40 backdrop-blur-xs pointer-events-auto"
             onClick={() => setShowGraphModal(false)}
           >
             <motion.div
@@ -909,7 +923,7 @@ export const BubblePopGameScreen: React.FC<BubblePopGameScreenProps> = ({
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 15 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-xl h-96 relative"
+              className="w-full max-w-3xl relative"
             >
               <button
                 onClick={() => setShowGraphModal(false)}

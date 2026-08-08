@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
+import { Smile, Meh, Frown, AlertOctagon } from "lucide-react";
 import whaleIcon from "../../assets/icon/whaleicon.png";
 
 export type StressLevelType = "very_low" | "low" | "medium" | "high" | "very_high";
@@ -8,7 +9,7 @@ export interface StressLevelConfig {
   key: StressLevelType;
   labelEn: string;
   labelTh: string;
-  emoji: string;
+  emoji: React.ReactNode;
   color: string;
   bgGradient: string;
   description: string;
@@ -19,154 +20,109 @@ export const STRESS_LEVELS: Record<StressLevelType, StressLevelConfig> = {
     key: "very_low",
     labelEn: "Very Low",
     labelTh: "ผ่อนคลายมากที่สุด",
-    emoji: "😄",
+    emoji: <Smile className="w-5 h-5 text-emerald-950" />,
     color: "#4ade80",
     bgGradient: "from-emerald-300 to-teal-300",
-    description: "สภาวะอารมณ์สดใส ผ่อนคลายสูงสุด ร่างกายอยู่ในสภาวะสมดุลยอดเยี่ยม 🌿",
+    description: "สภาวะอารมณ์สดใส ผ่อนคลายสูงสุด ร่างกายอยู่ในสภาวะสมดุลยอดเยี่ยม",
   },
   low: {
     key: "low",
     labelEn: "Low",
     labelTh: "ผ่อนคลายปกติ",
-    emoji: "🙂",
+    emoji: <Smile className="w-5 h-5 text-amber-950" />,
     color: "#facc15",
     bgGradient: "from-teal-300 to-amber-300",
-    description: "สภาวะอารมณ์ปกติ สบายใจ ไม่มีเรื่องวิตกกังวล ให้รักษารอยยิ้มแบบนี้ไว้นะ 💙",
+    description: "สภาวะอารมณ์ปกติ สบายใจ ไม่มีเรื่องวิตกกังวล ให้รักษารอยยิ้มแบบนี้ไว้นะ",
   },
   medium: {
     key: "medium",
     labelEn: "Medium",
     labelTh: "ปานกลาง",
-    emoji: "🙁",
+    emoji: <Meh className="w-5 h-5 text-orange-950" />,
     color: "#fb923c",
     bgGradient: "from-amber-300 to-orange-300",
-    description: "เริ่มมีความเครียดเล็กน้อย ลองพักสายตา ฟังเพลงสบายๆ หรือยืดเส้นยืดสายดูนะ 🎵",
+    description: "เริ่มมีความเครียดเล็กน้อย ลองพักสายตา ฟังเพลงสบายๆ หรือยืดเส้นยืดสายดูนะ",
   },
   high: {
     key: "high",
     labelEn: "High",
     labelTh: "เครียดสูง",
-    emoji: "😟",
+    emoji: <Frown className="w-5 h-5 text-rose-950" />,
     color: "#f87171",
     bgGradient: "from-orange-300 to-rose-400",
-    description: "มีความวิตกกังวลสูงกว่าปกติ หายใจเข้าลึกๆ ดื่มน้ำเย็น และพักจากงานสักครู่ 🌊",
+    description: "มีความวิตกกังวลสูงกว่าปกติ หายใจเข้าลึกๆ ดื่มน้ำเย็น และพักจากงานสักครู่",
   },
   very_high: {
     key: "very_high",
     labelEn: "Very High",
     labelTh: "เครียดสูงมาก",
-    emoji: "😫",
+    emoji: <AlertOctagon className="w-5 h-5 text-red-950" />,
     color: "#ef4444",
     bgGradient: "from-rose-400 to-red-500",
-    description: "ระดับความเครียดสูงสะสม ควรหยุดพักทันที ลองคุยกับใครสักคนหรือทำกิจกรรมผ่อนคลาย ❤️‍🩹",
+    description: "ระดับความเครียดสูงสะสม ควรหยุดพักทันที ลองคุยกับใครสักคนหรือทำกิจกรรมผ่อนคลาย",
   },
 };
 
 interface VerticalStressMeterProps {
   currentLevel: StressLevelType;
-  stressPercentage?: number;
+  currentPercentage?: number;
+  onSelectLevel?: (level: StressLevelType) => void;
 }
 
-// Emoji Badge Configurations matching Image 2
-const EMOJI_BADGE_CONFIG: Record<
-  StressLevelType,
-  { badgeBg: string; activeGlow: string }
-> = {
+const EMOJI_BADGE_CONFIG: Record<StressLevelType, { badgeBg: string; activeGlow: string }> = {
   very_low: {
-    badgeBg: "bg-[#9be1a7]",
-    activeGlow: "shadow-[0_0_20px_rgba(155,225,167,0.8)] ring-4 ring-[#9be1a7]/40",
+    badgeBg: "bg-emerald-300 text-slate-900 border-2 border-emerald-400",
+    activeGlow: "shadow-[0_0_15px_rgba(74,222,128,0.8)] border-white scale-125 ring-2 ring-emerald-300",
   },
   low: {
-    badgeBg: "bg-[#fce789]",
-    activeGlow: "shadow-[0_0_20px_rgba(252,231,137,0.8)] ring-4 ring-[#fce789]/40",
+    badgeBg: "bg-amber-300 text-slate-900 border-2 border-amber-400",
+    activeGlow: "shadow-[0_0_15px_rgba(250,204,21,0.8)] border-white scale-125 ring-2 ring-amber-300",
   },
   medium: {
-    badgeBg: "bg-[#fcb97d]",
-    activeGlow: "shadow-[0_0_20px_rgba(252,185,125,0.8)] ring-4 ring-[#fcb97d]/40",
+    badgeBg: "bg-orange-300 text-slate-900 border-2 border-orange-400",
+    activeGlow: "shadow-[0_0_15px_rgba(251,146,60,0.8)] border-white scale-125 ring-2 ring-orange-300",
   },
   high: {
-    badgeBg: "bg-[#f99b93]",
-    activeGlow: "shadow-[0_0_20px_rgba(249,155,147,0.8)] ring-4 ring-[#f99b93]/40",
+    badgeBg: "bg-rose-400 text-white border-2 border-rose-500",
+    activeGlow: "shadow-[0_0_15px_rgba(248,113,113,0.8)] border-white scale-125 ring-2 ring-rose-400",
   },
   very_high: {
-    badgeBg: "bg-[#ea6e75]",
-    activeGlow: "shadow-[0_0_20px_rgba(234,110,117,0.8)] ring-4 ring-[#ea6e75]/40",
+    badgeBg: "bg-red-500 text-white border-2 border-red-600",
+    activeGlow: "shadow-[0_0_15px_rgba(239,68,68,0.8)] border-white scale-125 ring-2 ring-red-500",
   },
 };
 
 export const VerticalStressMeter: React.FC<VerticalStressMeterProps> = ({
   currentLevel,
-  stressPercentage,
+  currentPercentage = 50,
 }) => {
-  // Map level key to position percentage (Top = Very Low / 10%, Bottom = Very High / 90%)
-  const getMarkerTopPercentage = (): number => {
-    if (stressPercentage !== undefined) {
-      return Math.min(90, Math.max(10, stressPercentage));
-    }
-    switch (currentLevel) {
-      case "very_low":
-        return 10;
-      case "low":
-        return 30;
-      case "medium":
-        return 50;
-      case "high":
-        return 70;
-      case "very_high":
-        return 90;
-    }
-  };
-
-  const markerTopPct = getMarkerTopPercentage();
-
-  // Top to Bottom list matching Image 2
   const levelsList: StressLevelConfig[] = [
-    STRESS_LEVELS.very_low,
-    STRESS_LEVELS.low,
-    STRESS_LEVELS.medium,
-    STRESS_LEVELS.high,
     STRESS_LEVELS.very_high,
+    STRESS_LEVELS.high,
+    STRESS_LEVELS.medium,
+    STRESS_LEVELS.low,
+    STRESS_LEVELS.very_low,
   ];
 
   return (
-    <div className="relative flex items-center justify-between w-full max-w-64 h-64 px-2 py-1 my-0.5 select-none">
-      {/* Left Labels (Top = Very Low -> Bottom = Very High) */}
-      <div className="flex flex-col justify-between h-full py-2 text-right pr-2 font-bold text-[#2a3a5e] text-xs space-y-4">
-        {levelsList.map((lvl) => (
-          <motion.span
-            key={lvl.key}
-            animate={{
-              scale: currentLevel === lvl.key ? 1.15 : 1,
-              color: currentLevel === lvl.key ? "#0284c7" : "#94a3b8",
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className={`transition-all ${
-              currentLevel === lvl.key ? "font-extrabold" : "font-semibold"
-            }`}
-          >
-            {lvl.labelEn}
-          </motion.span>
-        ))}
+    <div className="relative h-64 w-28 flex items-center justify-between select-none py-1">
+      {/* Left Track (Background Line) */}
+      <div className="relative h-full w-4 bg-slate-200/80 rounded-full overflow-hidden shadow-inner border border-slate-300/40">
+        {/* Dynamic Gradient Bar from bottom */}
+        <motion.div
+          initial={{ height: 0 }}
+          animate={{ height: `${currentPercentage}%` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute bottom-0 w-full bg-linear-to-t from-emerald-400 via-amber-400 to-red-500 rounded-full"
+        />
       </div>
 
-      {/* Center Thermometer Bar Container (Top = Green -> Bottom = Red) */}
-      <div className="relative w-11 h-full bg-slate-100/90 rounded-full border-4 border-white shadow-[inset_0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col justify-between p-1">
-        {/* 5 Layered Gradients Top (Green) to Bottom (Red) */}
-        <div className="w-full h-1/5 bg-linear-to-b from-[#8cd499] to-[#c2eb9e] rounded-t-full opacity-90" />
-        <div className="w-full h-1/5 bg-linear-to-b from-[#c2eb9e] to-[#f5e07b] opacity-90" />
-        <div className="w-full h-1/5 bg-linear-to-b from-[#f5e07b] to-[#f6a563] opacity-90" />
-        <div className="w-full h-1/5 bg-linear-to-b from-[#f6a563] to-[#ef7270] opacity-90" />
-        <div className="w-full h-1/5 bg-linear-to-b from-[#ef7270] to-[#d64750] rounded-b-full opacity-90" />
-
-        {/* Dynamic Inner Glow */}
-        <div className="absolute inset-0 bg-white/20 pointer-events-none rounded-full" />
-      </div>
-
-      {/* Animated Whale Marker with Spring Physics */}
+      {/* Moving Whale Marker Indicator */}
       <motion.div
-        className="absolute left-1/2 -translate-x-1/2 z-20 pointer-events-none"
-        initial={{ top: `calc(50% - 18px)` }}
-        animate={{ top: `calc(${markerTopPct}% - 18px)` }}
+        className="absolute -left-1.5 z-20 pointer-events-none"
+        animate={{
+          bottom: `${Math.max(8, Math.min(92, currentPercentage))}%`,
+        }}
         transition={{ type: "spring", stiffness: 120, damping: 14 }}
       >
         <div className="relative flex items-center justify-center">
@@ -183,12 +139,6 @@ export const VerticalStressMeter: React.FC<VerticalStressMeterProps> = ({
               src={whaleIcon}
               alt="Whale Indicator"
               className="w-8 h-8 object-contain drop-shadow-xs"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                if (e.currentTarget.parentElement) {
-                  e.currentTarget.parentElement.innerText = "🐳";
-                }
-              }}
             />
           </motion.div>
         </div>
@@ -211,9 +161,7 @@ export const VerticalStressMeter: React.FC<VerticalStressMeterProps> = ({
                 badgeStyle.badgeBg
               } ${isActive ? badgeStyle.activeGlow + " z-10" : "border border-white/60"}`}
             >
-              <span className="text-lg leading-none filter drop-shadow-xs">
-                {lvl.emoji}
-              </span>
+              {lvl.emoji}
             </motion.div>
           );
         })}

@@ -35,7 +35,7 @@ export const MusicSettingsModal: React.FC<MusicSettingsModalProps> = ({
   const handleParticleDensity = (density: ParticleDensity) => {
     preferenceManager.updatePreferences({ particleDensity: density });
     setPrefs(preferenceManager.getPreferences());
-    onToast(`ปรับระดับความละเอียด Particle เป็น ${density}`, "✨");
+    onToast(`ปรับความละเอียดอนุภาคเป็น ${density === "low" ? "ประหยัด" : density === "medium" ? "สมดุล" : "สูงสุด"}`, "✨");
   };
 
   const handleRestoreDefaults = () => {
@@ -108,7 +108,7 @@ export const MusicSettingsModal: React.FC<MusicSettingsModalProps> = ({
               {/* Particle Density Performance Settings */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-white/80 flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-emerald-400" /> ความละเอียดอนุมูลเอฟเฟกต์ (Particle Density)
+                  <Sparkles size={14} className="text-emerald-400" /> ความละเอียดอนุภาคเอฟเฟกต์ (Particle Density)
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   <button

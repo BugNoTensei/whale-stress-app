@@ -1,8 +1,10 @@
 import React, { useMemo } from "react";
+import { Smile, Meh, Frown, AlertOctagon } from "lucide-react";
 
 interface StressGraphProps {
   currentPercentage?: number;
   transparent?: boolean;
+  intense?: boolean;
   className?: string;
 }
 
@@ -88,35 +90,32 @@ export const StressGraph: React.FC<StressGraphProps> = ({
 
   return (
     <div
-      className={`w-full h-full flex flex-col justify-between select-none rounded-3xl p-4 shadow-sm border overflow-hidden min-h-0 ${
+      className={`w-full h-full flex flex-col justify-between select-none rounded-3xl px-5 pt-4 pb-4 shadow-sm border overflow-hidden min-h-0 ${
         transparent
-          ? "bg-white/75 backdrop-blur-md border-white/60 shadow-lg text-slate-800"
-          : "bg-white border-slate-100"
+          ? "bg-white/80 backdrop-blur-md border-white/60 shadow-xl text-slate-800"
+          : "bg-white border-slate-100 text-slate-800"
       } ${className}`}
+      style={{ fontFamily: "'Inter', 'Noto Sans Thai', sans-serif" }}
     >
       {/* 1. Header Pill */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-1">
-        <span className="text-[11px] font-black text-[#157a8c] bg-[#e0f4f7] px-4 py-1 rounded-full uppercase tracking-widest border border-[#b2e5ed]">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-2">
+        <span className="text-[11px] font-black text-[#157a8c] bg-[#e0f4f7] px-3 py-1 rounded-full uppercase tracking-widest border border-[#b2e5ed]">
           STRESS METER GRAPH
         </span>
-        <span className="text-xs font-extrabold text-slate-500">
-          ประวัติการวัดความเครียดย้อนหลัง
+        <span className="text-[11px] font-extrabold text-slate-400">
+          ประวัติการวัดสภาวะอารมณ์ย้อนหลัง
         </span>
       </div>
 
       {/* 2. Main Line Chart SVG Container (100% Full Width & Height) */}
       <div className="relative flex-1 w-full flex items-center justify-center my-1">
-        {/* Chart SVG filling 100% container */}
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-full overflow-visible"
-        >
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full overflow-visible">
           <defs>
             {/* Multi-color Gradient Fill for Area under curve */}
             <linearGradient id="stressAreaGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#4ade80" stopOpacity="0.25" />
-              <stop offset="40%" stopColor="#facc15" stopOpacity="0.3" />
-              <stop offset="85%" stopColor="#f87171" stopOpacity="0.35" />
+              <stop offset="0%" stopColor="#4ade80" stopOpacity="0.2" />
+              <stop offset="40%" stopColor="#facc15" stopOpacity="0.25" />
+              <stop offset="80%" stopColor="#f87171" stopOpacity="0.3" />
               <stop offset="100%" stopColor="#ef4444" stopOpacity="0.25" />
             </linearGradient>
 
@@ -147,14 +146,14 @@ export const StressGraph: React.FC<StressGraphProps> = ({
                   x2={W - padX}
                   y2={gy}
                   stroke="#e2e8f0"
-                  strokeWidth="1"
-                  strokeDasharray={item.ratio === 0 || item.ratio === 1.0 ? "" : "3,3"}
+                  strokeWidth="1.5"
+                  strokeDasharray={item.ratio === 0 || item.ratio === 1.0 ? "" : "4,4"}
                 />
                 <text
-                  x={padX - 8}
-                  y={gy + 3}
+                  x={padX - 10}
+                  y={gy + 4}
                   fill="#94a3b8"
-                  fontSize="9"
+                  fontSize="11"
                   fontWeight="bold"
                   textAnchor="end"
                 >
@@ -172,24 +171,26 @@ export const StressGraph: React.FC<StressGraphProps> = ({
             y2={currentY}
             stroke="#991b1b"
             strokeWidth="1.5"
-            strokeDasharray="5,4"
+            strokeDasharray="6,4"
           />
 
           {/* Current Percentage Dynamic Y-Axis Red Badge */}
-          <g transform={`translate(${padX - 8}, ${currentY})`}>
+          <g transform={`translate(${padX - 10}, ${currentY})`}>
             <rect
-              x="-30"
-              y="-7"
-              width="28"
-              height="14"
-              rx="4"
+              x="-36"
+              y="-10"
+              width="34"
+              height="18"
+              rx="5"
               fill="#ef4444"
+              stroke="#ffffff"
+              strokeWidth="1"
             />
             <text
-              x="-16"
+              x="-19"
               y="3"
               fill="#ffffff"
-              fontSize="9"
+              fontSize="11"
               fontWeight="900"
               textAnchor="middle"
             >
@@ -200,7 +201,7 @@ export const StressGraph: React.FC<StressGraphProps> = ({
           {/* Area Fill */}
           <path d={areaD} fill="url(#stressAreaGrad)" />
 
-          {/* Smooth Curve Stroke */}
+          {/* Smooth Bezier Curve Stroke */}
           <path
             d={pathD}
             fill="none"
@@ -213,100 +214,79 @@ export const StressGraph: React.FC<StressGraphProps> = ({
           {/* Data Points */}
           {points.map((pt, i) => {
             const isCurrent = i === points.length - 1;
-            const dotColor =
-              pt.val > 70 ? "#ef4444" : pt.val > 45 ? "#eab308" : "#22c55e";
+            const dotColor = pt.val > 70 ? "#ef4444" : pt.val > 45 ? "#eab308" : "#22c55e";
 
             return (
-              <g key={i}>
-                <circle
-                  cx={pt.x}
-                  cy={pt.y}
-                  r={isCurrent ? 6.5 : 4.5}
-                  fill={dotColor}
-                  stroke="#ffffff"
-                  strokeWidth="2"
-                />
-              </g>
+              <circle
+                key={i}
+                cx={pt.x}
+                cy={pt.y}
+                r={isCurrent ? 6.5 : 4.5}
+                fill={dotColor}
+                stroke="#ffffff"
+                strokeWidth="2.5"
+              />
             );
           })}
         </svg>
       </div>
 
-      {/* 3. X-axis Timestamps Labels (เวลาที่วัดล่าสุด) */}
-      <div className="w-full flex justify-between px-6 text-[10px] font-bold text-slate-500 mt-1">
+      {/* 3. X-axis History Timestamps Labels */}
+      <div className="w-full flex justify-between px-8 text-[11px] font-bold text-slate-400 mt-1">
         {historyData.map((d, i) => (
-          <span
-            key={i}
-            className={
-              i === historyData.length - 1 ? "text-rose-600 font-black" : ""
-            }
-          >
+          <span key={i} className={i === historyData.length - 1 ? "text-rose-500 font-black" : ""}>
             {d.timeLabel}
           </span>
         ))}
       </div>
 
-      {/* 4. Mood Levels Emojis Scale Row */}
-      <div className="w-full grid grid-cols-5 gap-1 text-center mt-2.5 pt-2 border-t border-slate-100">
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-semibold text-slate-400 mb-0.5">
-            Very Low
-          </span>
-          <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shadow-xs border border-emerald-200">
-            😊
+      {/* 4. Mood Levels Icons Scale Row */}
+      <div className="w-full grid grid-cols-5 gap-1 text-center mt-2 pt-2 border-t border-slate-100">
+        <div className="flex flex-col items-center gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400">Very Low</span>
+          <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-xs border border-emerald-200">
+            <Smile size={14} />
           </div>
         </div>
-
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-semibold text-slate-400 mb-0.5">
-            Low
-          </span>
-          <div className="w-7 h-7 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm shadow-xs border border-green-200">
-            🙂
+        <div className="flex flex-col items-center gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400">Low</span>
+          <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center shadow-xs border border-green-200">
+            <Smile size={14} />
           </div>
         </div>
-
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-semibold text-slate-400 mb-0.5">
-            Medium
-          </span>
-          <div className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm shadow-xs border border-amber-200">
-            😐
+        <div className="flex flex-col items-center gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400">Medium</span>
+          <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shadow-xs border border-amber-200">
+            <Meh size={14} />
           </div>
         </div>
-
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-semibold text-slate-400 mb-0.5">
-            High
-          </span>
-          <div className="w-7 h-7 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm shadow-xs border border-orange-200">
-            😟
+        <div className="flex flex-col items-center gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400">High</span>
+          <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shadow-xs border border-orange-200">
+            <Frown size={14} />
           </div>
         </div>
-
-        <div className="flex flex-col items-center">
-          <span className="text-[9px] font-semibold text-slate-400 mb-0.5">
-            Very High
-          </span>
-          <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-sm shadow-xs border border-rose-300 ring-2 ring-rose-400/40">
-            😡
+        <div className="flex flex-col items-center gap-0.5">
+          <span className="text-[9px] font-semibold text-slate-400">Very High</span>
+          <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shadow-xs border border-rose-300 ring-2 ring-rose-400/40">
+            <AlertOctagon size={14} />
           </div>
         </div>
       </div>
 
       {/* 5. Legend */}
-      <div className="flex items-center justify-center gap-5 text-[10px] font-bold text-slate-500 mt-2">
+      <div className="flex items-center justify-center gap-5 text-[11px] font-bold text-slate-500 mt-1.5">
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-1 rounded-full bg-emerald-400" />
-          <span>Low</span>
+          <span className="w-3 h-1.5 rounded-full bg-emerald-400" />
+          <span>Low (ผ่อนคลาย)</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-1 rounded-full bg-amber-400" />
-          <span>Medium</span>
+          <span className="w-3 h-1.5 rounded-full bg-amber-400" />
+          <span>Medium (ปานกลาง)</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-1 rounded-full bg-rose-500" />
-          <span>High</span>
+          <span className="w-3 h-1.5 rounded-full bg-rose-500" />
+          <span>High (เครียดสูง)</span>
         </div>
       </div>
     </div>
